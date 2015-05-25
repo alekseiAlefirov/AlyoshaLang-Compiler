@@ -117,6 +117,7 @@ type nonTerminalId =
     | NONTERM_UnionElement
     | NONTERM_TypeCortage
     | NONTERM_Block
+    | NONTERM_ExpressionSequence
     | NONTERM_Statement
     | NONTERM_AssignmentAtom
     | NONTERM_Assignment

@@ -62,8 +62,11 @@ TypeCortage :
 	| ID						{ [ $1 ] }
 
 Block :
-	| Expression SEMICOLON Block	{  $1 :: $3 }
-	| Expression					{ [ $1 ] }
+	| ExpressionSequence 	{ Block $1 }
+
+ExpressionSequence :
+	| Expression SEMICOLON ExpressionSequence	{ $1 :: $3 }
+	| Expression								{ [ $1 ] }
 
 Statement :
 	| LetAssignment				{ $1 }

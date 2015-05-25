@@ -6,7 +6,7 @@ and unionDefinition = string * (string list) * (unionElement list)
 
 and unionElement = string * (string list)
 
-and block = expression list
+and block = Block of expression list
 
 and statement =
     | LetAssignment of assignment
@@ -61,3 +61,7 @@ and mulSign =
     | Div
 
 and varId = string * (int ref) //text and id in Table
+
+let unboxBlock blk =
+    match blk with
+    | Block x -> x

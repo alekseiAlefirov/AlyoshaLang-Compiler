@@ -358,22 +358,22 @@ let checkProgram (prog : program) =
 
             | IfStatement (condition, trueBlock, elifList, elseBlock) ->
                 let afterConditionConstraints = getConstraintsFromExpr constraintList (TypeVal BoolType) condition
-                let afterTrueBlockConstraints = getConstraintsFromBlock afterConditionConstraints exprValueType trueBlock
+                let afterTrueBlockConstraints = getConstraintsFromBlock afterConditionConstraints exprValueType (unboxBlock trueBlock)
                 let afterElifListConstraints =
                     let folder constraints elifNode =
                         let elifCondition, elifBlock = elifNode
                         let newConstraints = getConstraintsFromExpr constraints (TypeVal BoolType) elifCondition
-                        getConstraintsFromBlock newConstraints exprValueType elifBlock
+                        getConstraintsFromBlock newConstraints exprValueType (unboxBlock elifBlock)
                     elifList |> List.fold folder afterTrueBlockConstraints
                 match elseBlock with
                 | Some elseBlock ->
-                    getConstraintsFromBlock afterElifListConstraints exprValueType elseBlock
+                    getConstraintsFromBlock afterElifListConstraints exprValueType (unboxBlock elseBlock)
                 | None ->
                     (exprValueType, TypeVal UnitType)::afterElifListConstraints
 
             | WhileStatement (condition, whileBlock) ->
                 let afterConditionConstraints = getConstraintsFromExpr ((exprValueType, TypeVal UnitType)::constraintList) (TypeVal BoolType) condition
-                getConstraintsFromBlock afterConditionConstraints (TypeVal UnitType) whileBlock
+                getConstraintsFromBlock afterConditionConstraints (TypeVal UnitType) (unboxBlock whileBlock)
 
             | WriteStatement expr ->
                 getConstraintsFromExpr ((exprValueType, TypeVal UnitType)::constraintList) AnyType expr
@@ -419,7 +419,7 @@ let checkProgram (prog : program) =
             getConstraintsFromExpr afterFirstConstraints (TypeVal IntType) expr2
 
         | SequenceExpression exprBlock ->
-            getConstraintsFromBlock constraintList exprValueType exprBlock
+            getConstraintsFromBlock constraintList exprValueType (unboxBlock exprBlock)
 
         | ExprId (varName, tableId) ->
             if typeContext.ContainsKey varName then
@@ -532,7 +532,7 @@ let checkProgram (prog : program) =
         
     let substitution = 
         match prog with
-        | Program (_, _, blk) -> getConstraintsFromBlock [] (TypeVal UnitType) blk |> unifyConstraintList nextVariableNumId
+        | Program (_, _, blk) -> getConstraintsFromBlock [] (TypeVal UnitType) (unboxBlock blk) |> unifyConstraintList nextVariableNumId
 
     for varInfo in TableOfSymbols do
         match varInfo.Type with

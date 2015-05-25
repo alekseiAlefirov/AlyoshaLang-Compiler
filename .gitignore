@@ -1,0 +1,24 @@
+AlyoshaLang/AlyoshaLang/obj/Debug/AlyoshaLang.exe
+AlyoshaLang/AlyoshaLang/obj/Debug/AlyoshaLang.fsproj.FileListAbsolute.txt
+AlyoshaLang/AlyoshaLang/obj/Debug/AlyoshaLang.fsprojResolveAssemblyReference.cache
+AlyoshaLang/asmFiles/hello printf.asm
+AlyoshaLang/asmFiles/writeConsole/writenumGen.bat
+AlyoshaLang/asmFiles/writeConsole/writeConsoleANumber.exe
+AlyoshaLang/asmFiles/writeConsole/writeConsoleANumber.obj
+AlyoshaLang/asmFiles/writeConsole/writeConsoleANumber.asm
+AlyoshaLang/AlyoshaLang/bin/Debug/AlyoshaLang.exe
+AlyoshaLang/AlyoshaLang/bin/Debug/FSharp.PowerPack.xml
+AlyoshaLang/AlyoshaLang/bin/Debug/FSharp.PowerPack.pdb
+AlyoshaLang/AlyoshaLang/bin/Debug/FSharp.Core.dll
+AlyoshaLang/AlyoshaLang/bin/Debug/AlyoshaLang.exe.config
+AlyoshaLang/AlyoshaLang/bin/Debug/FSharp.PowerPack.dll
+AlyoshaLang/AlyoshaLang/obj/Debug/AlyoshaLang.pdb
+AlyoshaLang/AlyoshaLang/bin/Debug/AlyoshaLang.XML
+*.asm
+AlyoshaLang/asmFiles/hw.obj
+*.s
+AlyoshaLang/asmFiles/mlLaunch.bat
+AlyoshaLang/asmFiles/writeConsole/writeConsole.exe
+AlyoshaLang/asmFiles/writeConsole/writeConsole.obj
+AlyoshaLang/AlyoshaLang/bin/Debug/AlyoshaLang.pdb
+AlyoshaLang/AlyoshaLang/bin/Debug/FSharp.Core.xml
