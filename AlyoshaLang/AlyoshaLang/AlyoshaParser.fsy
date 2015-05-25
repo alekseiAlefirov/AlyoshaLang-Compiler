@@ -1,0 +1,223 @@
+%{
+
+open AlyoshaAST
+
+%}
+
+%start start
+
+%token <System.Int32> NUMVAL
+%token <bool> BOOLVAL
+%token <string> STRINGVAL
+%token UNIT
+%token <string> ID
+%token PROGRAM
+%token LPAREN RPAREN LBRACE RBRACE PIPE
+%token EQUAL LET REC ANDREC
+%token NOT
+%token ISEQUAL NOTEQUAL GREATER NOTLESS LESS NOTGREATER
+%token UNION
+%token OF
+%token PLUS MINUS MUL DIV MOD
+%token SEMICOLON COLON
+%token IF THEN ELSE ELIF FI
+%token WHILE DO OD
+%token READNUM READLINE WRITE
+%token FUN FUNARROW NUF
+%token MATCH WITH ENDMATCH
+%token AND OR
+%token EOF
+
+%type < AlyoshaAST.program > start
+
+%%
+
+start : Prog EOF { Program $1 }
+
+Prog : 
+	| PROGRAM ID UnionBlock Block	{ ( $2, $3 , $4 ) }
+	| PROGRAM ID Block					{ ($2, [] , $3 ) }
+
+UnionBlock :
+	| UnionDef UnionBlock	{ $1 :: $2  }
+	| UnionDef				{ [ $1 ] }
+
+UnionDef :
+	| UNION ID TypeVariables EQUAL LBRACE UnionElementList  RBRACE	{ ( $2 , $3 , $6 ) }
+
+TypeVariables :
+	| ID TypeVariables	{ $1 :: $2 }
+	|					{ [] }
+
+UnionElementList :	
+	| UnionElement PIPE UnionElementList	{ $1 :: $3 }
+	| UnionElement							{ [ $1 ] }
+
+UnionElement :
+	| ID OF TypeCortage			{ ( $1 , $3 ) }
+	| ID						{ ( $1 , []) }
+
+TypeCortage :
+	| ID MUL TypeCortage		{ $1 :: $3 }
+	| ID						{ [ $1 ] }
+
+Block :
+	| Expression SEMICOLON Block	{  $1 :: $3 }
+	| Expression					{ [ $1 ] }
+
+Statement :
+	| LetAssignment				{ $1 }
+	| LetRecursiveAssignment	{ $1}
+	| Assignment				{ Assignment $1 }
+	| IfStatement				{ $1 }
+	| WhileStatement			{ $1 }
+	| WriteStatement			{ $1 }
+	| MatchStatement			{ $1 }
+
+AssignmentAtom :
+	| Id EQUAL Expression { ($1, $3) }
+
+Assignment : 
+	| AssignmentAtom		{ UsualAssignment $1 }
+	| READNUM Id			{ ReadNum $2 }
+	| READLINE Id			{ ReadLine $2 }
+
+LetAssignment :
+	| LET Assignment		{ LetAssignment $2 }
+
+LetRecursiveAssignment :
+	| LET REC Id FunArguments EQUAL Expression RecAndList { LetRecursiveAssignment( ($3, $4, $6) :: $7 ) }
+
+RecAndList :
+	| ANDREC Id FunArguments EQUAL Expression RecAndList	{ ($2, $3, $5) :: $6 }
+	|														{ [] }
+
+IfStatement : 
+	| IF Expression THEN Block FI ElifList ELSE Block FI	{ IfStatement( $2 , $4 , $6 , Some( $8 )) }
+	| IF Expression THEN Block FI ElifList					{ IfStatement( $2 , $4 , $6 , None) }
+
+ElifList :
+	| ELIF Expression THEN Block FI ElifList	{ ( $2 , $4 ) :: $6 }
+	| ELIF Expression THEN Block FI				{ [ ( $2 , $4 ) ] }
+	|											{ [] }
+
+WhileStatement : 
+	| WHILE Expression DO Block OD	{ WhileStatement( $2 , $4 ) }
+
+WriteStatement :
+	| WRITE Expression				{ WriteStatement( $2 ) }
+
+MatchStatement :
+	| MATCH Id WITH GuardList ENDMATCH	{ MatchStatement( $2 , $4 ) }
+
+GuardList :
+	| Guard GuardList	{ $1 :: $2 }
+	| Guard				{ [ $1 ] }
+
+Guard :
+	| PIPE ID GuardArgs COLON Block	{ ( $2 , $3 , $5 ) }
+
+GuardArgs :
+	| ID GuardArgs	{ $1 :: $2 }
+	|				{ [] }
+
+Expression : 
+	| Statement						{ Statement $1 }
+	| LogicTerm	RightLogicTermList	{ OrList( $1 :: $2 ) }
+	| LogicTerm						{ $1 }
+	| Abstraction					{ $1 }
+	| Application					{ $1 }
+	| LBRACE Block RBRACE			{ SequenceExpression $2 }
+
+RightLogicTermList :
+	| OR LogicTerm RightLogicTermList	{ $2 :: $3 }
+	| OR LogicTerm			{ [$2] }
+
+Application :
+	| LeftAppPart ApplicantsList	{ Application( $1 , $2 ) }
+
+LeftAppPart : 
+	| Id							{ ExprId( $1) }
+	| LPAREN Expression RPAREN		{ $2  }
+
+ApplicantsList :
+	| Expression ApplicantsList		{ $1 :: $2 }
+	| Expression					{ [ $1 ] }
+
+Abstraction :
+	| FUN FunArguments FUNARROW Expression	{ Abstraction ($2, $4) }
+
+FunArguments :
+	| UNIT		{ [] }
+	| IdList	{ $1 }
+
+IdList :
+	| Id IdList { $1 :: $2 }
+	| Id		{ [ $1 ] }
+
+LogicTerm : 
+	| LogicFactor RightLogicFactorList	{ AndList ( $1 :: $2) }
+	| LogicFactor						{ $1 }
+
+RightLogicFactorList :
+	| AND LogicFactor RightLogicFactorList	{ $2 :: $3 }
+	| AND LogicFactor						{ [$2] }
+
+LogicFactor: 
+	| CompOp		{ $1 }
+	| NOT CompOp	{ Not $2 }
+
+CompOp : 
+	| ArithmeticOp ISEQUAL	  ArithmeticOp { IsEqual ($1, $3) } 
+	| ArithmeticOp NOTEQUAL	  ArithmeticOp { NotEqual ($1, $3) } 
+	| ArithmeticOp GREATER	  ArithmeticOp { Greater ($1, $3) } 
+	| ArithmeticOp NOTLESS	  ArithmeticOp { NotLess ($1, $3) } 
+	| ArithmeticOp LESS		  ArithmeticOp { Less ($1, $3) } 
+	| ArithmeticOp NOTGREATER ArithmeticOp { NotGreater ($1, $3) }
+	| ArithmeticOp						   { $1 }
+
+ArithmeticOp : 
+	| Term RightTermList { Sum ( (Plus, $1) :: $2 ) }
+	| Term				 { $1 }
+
+RightTermList :
+	| ArithmeticOpSign Term RightTermList	{ ($1, $2) :: $3 }
+	| ArithmeticOpSign Term					{ [($1, $2)] }
+
+ArithmeticOpSign :
+	| PLUS	{ Plus }
+	| MINUS { Minus }
+
+Term : 
+	| Factor RightFactorList { Mult ((Mul, $1) :: $2) }
+	| Factor { $1 }
+
+RightFactorList :
+	| FactorOpSign Factor RightFactorList	{ ($1, $2) :: $3 }
+	| FactorOpSign Factor					{ [($1, $2)] }
+
+FactorOpSign :
+	| MUL	{ Mul }
+	| DIV	{ Div }
+
+Factor : 
+	| ModFactor MOD ModFactor	{ Mod ( $1 , $3 ) }
+	| ModFactor					{ $1 }
+
+ModFactor : 
+	| SimpleFactor { $1 }
+	| LPAREN Expression RPAREN { $2 }
+
+SimpleFactor: 
+	|	Id				{ ExprId ($1) }
+	|	SimpleValue		{ $1 }
+
+SimpleValue: 
+	|	NUMVAL		{ NumVal $1 }
+	|	BOOLVAL		{ BoolVal $1 }
+	| 	STRINGVAL	{ StringVal $1 }
+	| 	UNIT		{ UnitVal }
+
+Id : ID		{$1, ref -1}
+
+

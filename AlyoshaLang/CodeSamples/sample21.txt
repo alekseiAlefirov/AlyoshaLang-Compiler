@@ -1,0 +1,9 @@
+readnum x;
+
+rec fact = fun x ->
+{
+	if n <= 0 then 1 fi
+	else n * (fact (n - 1)) fi
+};
+
+write fact x

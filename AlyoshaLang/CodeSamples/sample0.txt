@@ -1,0 +1,4 @@
+﻿program p
+
+let x = 1;
+write x

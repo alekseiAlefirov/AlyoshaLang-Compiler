@@ -1,0 +1,89 @@
+﻿{
+module AlyoshaLexer
+open System
+open AlyoshaParser
+open Microsoft.FSharp.Text.Lexing
+
+let lexeme lexbuf =
+    LexBuffer<char>.LexemeString lexbuf
+}
+
+let digit = ['0'-'9']
+let whitespace = [' ' '\t']
+let newline = ('\n' | '\r' '\n')
+let letter = (['a'-'z'] | ['A'-'Z'])
+let id = letter (letter | digit)*
+let num = digit+
+
+let quotes = '"'
+let stringVal = quotes ( digit | letter | whitespace) quotes
+
+rule tokenize = parse
+| whitespace	{tokenize lexbuf}
+| newline		{tokenize lexbuf}
+| num			{ NUMVAL (Int32.Parse(lexeme lexbuf)) }
+| stringVal		{ STRINGVAL (string(lexeme lexbuf)) }
+
+| "()"			{ UNIT }
+| "=="			{ISEQUAL}
+| "!="			{NOTEQUAL}
+
+| "||"			{OR}
+| "&&"			{AND}
+| "not"			{NOT}
+| ">="			{NOTLESS}
+| "<="			{NOTGREATER}
+| "->"			{FUNARROW}
+
+| "true"			{ BOOLVAL (true) }
+| "false"			{ BOOLVAL (false) }
+
+| ";"			{SEMICOLON}
+| ":"			{COLON}
+| "="			{EQUAL}
+| "program"		{PROGRAM}
+| "union"		{UNION}
+| "of"			{OF}
+| "let"			{LET}
+| "rec"			{REC}
+| "and"			{ANDREC}
+| "if"			{IF}
+| "then"		{THEN}
+| "fi"			{FI}
+| "elif"		{ELIF}
+| "else"		{ELSE}
+| "while"		{WHILE}
+| "do"			{DO}
+| "od"			{OD}
+| "readnum"		{READNUM}
+| "readline"	{READLINE}
+| "write"		{WRITE}
+| "fun"			{FUN}
+| "nuf"			{NUF}
+| "match"		{MATCH}
+| "with"		{WITH}
+| "endmatch"    {ENDMATCH}
+
+
+
+| "="			{EQUAL}
+| "|"			{PIPE}
+| ">"			{GREATER}
+| "<"			{LESS}
+
+| "+"			{PLUS}
+| "-"			{MINUS}
+| "*"			{MUL}
+| "/"			{DIV}
+| "%"			{MOD}
+
+| "("			{LPAREN}
+| ")"			{RPAREN}
+| "{"			{LBRACE}
+| "}"			{RBRACE}
+
+
+| id			{ID (lexeme lexbuf)}
+
+| eof			{EOF}
+
