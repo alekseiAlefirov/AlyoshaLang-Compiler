@@ -56,7 +56,7 @@
       <OtherFlags>--unicode</OtherFlags>
     </FsLex>
     <Compile Include="Types.fs" />
-    <Compile Include="Scopes.fs" />
+    <Compile Include="FunScopes.fs" />
     <Compile Include="$(IntermediateOutputPath)\AlyoshaParser.fs">
       <Visible>false</Visible>
       <Link>AlyoshaParser.fs</Link>

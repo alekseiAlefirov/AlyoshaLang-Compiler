@@ -2,7 +2,7 @@
 
 open AlyoshaAST
 open Types
-open Scopes
+open FunScopes
 open VariablesInformation
 open System.Collections.Generic
 
@@ -201,7 +201,7 @@ let checkProgram (prog : program) =
                     
                     if !tableId = -1 then 
                         tableId := nextIdInTable () 
-                        TableOfSymbols.Add {Type = boundExprType; ScopeInfo = VarScopeInfo -1}
+                        TableOfSymbols.Add {Type = boundExprType; ScopeInfo = -1}
                     else ()
                     typeContext.[varName] <- (!tableId, boundExprType, true)
 
@@ -214,7 +214,7 @@ let checkProgram (prog : program) =
 
                     if !tableId = -1 then
                         tableId := nextIdInTable ()
-                        TableOfSymbols.Add {Type = idType; ScopeInfo = VarScopeInfo -1}
+                        TableOfSymbols.Add {Type = idType; ScopeInfo = -1}
                     else ()
                     typeContext.[varName] <- (!tableId, idType, true)
 
@@ -227,7 +227,7 @@ let checkProgram (prog : program) =
 
                     if !tableId = -1 then
                         tableId := nextIdInTable ()
-                        TableOfSymbols.Add {Type = idType; ScopeInfo = VarScopeInfo -1}
+                        TableOfSymbols.Add {Type = idType; ScopeInfo = -1}
                     else ()
                     typeContext.[varName] <- (!tableId, idType, true)
 
@@ -263,7 +263,7 @@ let checkProgram (prog : program) =
                         let newTypeVariable = ConnectionTypeVariable (nextVariableNumId())
                         if !funTableId = -1 then
                             funTableId := nextIdInTable ()
-                            TableOfSymbols.Add { Type = newTypeVariable; ScopeInfo = VarScopeInfo -1 }
+                            TableOfSymbols.Add { Type = newTypeVariable; ScopeInfo = -1 }
                         else ()
                         typeContext.[funName] <- (!funTableId, newTypeVariable, false)
                         ((funName, oldContext), newTypeVariable) :: (processFunNames asss)
@@ -487,7 +487,7 @@ let checkProgram (prog : program) =
                    
             if !tableId = -1 then
                 tableId := nextIdInTable () 
-                TableOfSymbols.Add { Type = argIdType; ScopeInfo = VarScopeInfo -1 }
+                TableOfSymbols.Add { Type = argIdType; ScopeInfo = -1 }
             else ()
 
             typeContext.[argName] <- (!tableId, argIdType, false)
@@ -508,7 +508,7 @@ let checkProgram (prog : program) =
                         
                 if !tableId = -1 then
                     tableId := nextIdInTable ()
-                    TableOfSymbols.Add { Type = argIdType; ScopeInfo = VarScopeInfo -1 }
+                    TableOfSymbols.Add { Type = argIdType; ScopeInfo = -1 }
                 else ()
 
                 typeContext.[argName] <- (!tableId, argIdType, false)

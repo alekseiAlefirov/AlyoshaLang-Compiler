@@ -11,6 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeSamples", "CodeSamples"
 		CodeSamples\sample21.txt = CodeSamples\sample21.txt
 		CodeSamples\sample3.txt = CodeSamples\sample3.txt
 		CodeSamples\sample4.txt = CodeSamples\sample4.txt
+		CodeSamples\sample5.txt = CodeSamples\sample5.txt
 	EndProjectSection
 EndProject
 Global

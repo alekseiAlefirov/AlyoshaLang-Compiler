@@ -6,23 +6,27 @@ open Microsoft.FSharp.Text.Lexing
 
 let lexeme lexbuf =
     LexBuffer<char>.LexemeString lexbuf
+
+let middle (str : string) =
+    str.Substring(1, str.Length - 2)
 }
 
 let digit = ['0'-'9']
 let whitespace = [' ' '\t']
 let newline = ('\n' | '\r' '\n')
 let letter = (['a'-'z'] | ['A'-'Z'])
+let punctSymbol = [',' '.' '!'  '?']
 let id = letter (letter | digit)*
 let num = digit+
 
 let quotes = '"'
-let stringVal = quotes ( digit | letter | whitespace) quotes
+let stringVal = quotes ( digit | letter | whitespace | punctSymbol)* quotes
 
 rule tokenize = parse
 | whitespace	{tokenize lexbuf}
 | newline		{tokenize lexbuf}
 | num			{ NUMVAL (Int32.Parse(lexeme lexbuf)) }
-| stringVal		{ STRINGVAL (string(lexeme lexbuf)) }
+| stringVal		{ STRINGVAL (middle (lexeme lexbuf)) }
 
 | "()"			{ UNIT }
 | "=="			{ISEQUAL}

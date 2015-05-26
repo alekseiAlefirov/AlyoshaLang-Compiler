@@ -1,3 +1,5 @@
+program useFun
+
 let readnum x;
 let f = fun x -> x;
 write f x

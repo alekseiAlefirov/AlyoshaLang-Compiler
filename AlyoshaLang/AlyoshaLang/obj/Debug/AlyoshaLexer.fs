@@ -8,7 +8,10 @@ open Microsoft.FSharp.Text.Lexing
 let lexeme lexbuf =
     LexBuffer<char>.LexemeString lexbuf
 
-# 11 "obj\Debug\AlyoshaLexer.fs"
+let middle (str : string) =
+    str.Substring(1, str.Length - 2)
+
+# 14 "obj\Debug\AlyoshaLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -22,7 +25,7 @@ let trans : uint16[] array =
     (* State 4 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 5 *)
-     [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
+     [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 122us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 122us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 6 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 120us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 7 *)
@@ -254,13 +257,13 @@ let trans : uint16[] array =
     (* State 120 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 121 *)
-     [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
-    (* State 122 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
+    (* State 122 *)
+     [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 122us; 121us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 122us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 122us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     (* State 123 *)
      [| 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 123us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; |];
     |] 
-let actions : uint16[] = [|65535us; 0us; 1us; 65535us; 2us; 65535us; 49us; 17us; 65535us; 41us; 65535us; 53us; 42us; 43us; 45us; 53us; 53us; 15us; 16us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 44us; 46us; 47us; 48us; 50us; 51us; 52us; 53us; 54us; 53us; 53us; 53us; 53us; 37us; 30us; 53us; 53us; 53us; 53us; 38us; 53us; 53us; 34us; 53us; 53us; 29us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 39us; 53us; 53us; 28us; 27us; 24us; 53us; 23us; 53us; 22us; 53us; 53us; 53us; 53us; 53us; 53us; 33us; 53us; 32us; 53us; 21us; 20us; 31us; 53us; 53us; 53us; 19us; 53us; 53us; 53us; 53us; 53us; 18us; 53us; 26us; 53us; 35us; 53us; 53us; 14us; 53us; 53us; 53us; 25us; 53us; 13us; 12us; 11us; 10us; 53us; 53us; 36us; 9us; 8us; 7us; 6us; 5us; 4us; 65535us; 3us; 2us; |]
+let actions : uint16[] = [|65535us; 0us; 1us; 65535us; 2us; 65535us; 49us; 17us; 65535us; 41us; 65535us; 53us; 42us; 43us; 45us; 53us; 53us; 15us; 16us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 44us; 46us; 47us; 48us; 50us; 51us; 52us; 53us; 54us; 53us; 53us; 53us; 53us; 37us; 30us; 53us; 53us; 53us; 53us; 38us; 53us; 53us; 34us; 53us; 53us; 29us; 53us; 53us; 53us; 53us; 53us; 53us; 53us; 39us; 53us; 53us; 28us; 27us; 24us; 53us; 23us; 53us; 22us; 53us; 53us; 53us; 53us; 53us; 53us; 33us; 53us; 32us; 53us; 21us; 20us; 31us; 53us; 53us; 53us; 19us; 53us; 53us; 53us; 53us; 53us; 18us; 53us; 26us; 53us; 35us; 53us; 53us; 14us; 53us; 53us; 53us; 25us; 53us; 13us; 12us; 11us; 10us; 53us; 53us; 36us; 9us; 8us; 7us; 6us; 5us; 4us; 3us; 65535us; 2us; |]
 let _fslex_tables = Microsoft.FSharp.Text.Lexing.UnicodeTables.Create(trans,actions)
 let rec _fslex_dummy () = _fslex_dummy() 
 (* Rule tokenize *)
@@ -269,282 +272,282 @@ and tokenize  (lexbuf : Microsoft.FSharp.Text.Lexing.LexBuffer<_>) = _fslex_toke
 and _fslex_tokenize  _fslex_state lexbuf =
   match _fslex_tables.Interpret(_fslex_state,lexbuf) with
   | 0 -> ( 
-# 22 "AlyoshaLexer.fsl"
+# 26 "AlyoshaLexer.fsl"
                              tokenize lexbuf
-# 274 "obj\Debug\AlyoshaLexer.fs"
+# 277 "obj\Debug\AlyoshaLexer.fs"
           )
   | 1 -> ( 
-# 23 "AlyoshaLexer.fsl"
+# 27 "AlyoshaLexer.fsl"
                            tokenize lexbuf
-# 279 "obj\Debug\AlyoshaLexer.fs"
+# 282 "obj\Debug\AlyoshaLexer.fs"
           )
   | 2 -> ( 
-# 24 "AlyoshaLexer.fsl"
+# 28 "AlyoshaLexer.fsl"
                          NUMVAL (Int32.Parse(lexeme lexbuf)) 
-# 284 "obj\Debug\AlyoshaLexer.fs"
+# 287 "obj\Debug\AlyoshaLexer.fs"
           )
   | 3 -> ( 
-# 25 "AlyoshaLexer.fsl"
-                              STRINGVAL (string(lexeme lexbuf)) 
-# 289 "obj\Debug\AlyoshaLexer.fs"
+# 29 "AlyoshaLexer.fsl"
+                              STRINGVAL (middle (lexeme lexbuf)) 
+# 292 "obj\Debug\AlyoshaLexer.fs"
           )
   | 4 -> ( 
-# 27 "AlyoshaLexer.fsl"
+# 31 "AlyoshaLexer.fsl"
                           UNIT 
-# 294 "obj\Debug\AlyoshaLexer.fs"
+# 297 "obj\Debug\AlyoshaLexer.fs"
           )
   | 5 -> ( 
-# 28 "AlyoshaLexer.fsl"
+# 32 "AlyoshaLexer.fsl"
                          ISEQUAL
-# 299 "obj\Debug\AlyoshaLexer.fs"
+# 302 "obj\Debug\AlyoshaLexer.fs"
           )
   | 6 -> ( 
-# 29 "AlyoshaLexer.fsl"
+# 33 "AlyoshaLexer.fsl"
                          NOTEQUAL
-# 304 "obj\Debug\AlyoshaLexer.fs"
+# 307 "obj\Debug\AlyoshaLexer.fs"
           )
   | 7 -> ( 
-# 31 "AlyoshaLexer.fsl"
+# 35 "AlyoshaLexer.fsl"
                          OR
-# 309 "obj\Debug\AlyoshaLexer.fs"
+# 312 "obj\Debug\AlyoshaLexer.fs"
           )
   | 8 -> ( 
-# 32 "AlyoshaLexer.fsl"
+# 36 "AlyoshaLexer.fsl"
                          AND
-# 314 "obj\Debug\AlyoshaLexer.fs"
+# 317 "obj\Debug\AlyoshaLexer.fs"
           )
   | 9 -> ( 
-# 33 "AlyoshaLexer.fsl"
+# 37 "AlyoshaLexer.fsl"
                           NOT
-# 319 "obj\Debug\AlyoshaLexer.fs"
+# 322 "obj\Debug\AlyoshaLexer.fs"
           )
   | 10 -> ( 
-# 34 "AlyoshaLexer.fsl"
+# 38 "AlyoshaLexer.fsl"
                          NOTLESS
-# 324 "obj\Debug\AlyoshaLexer.fs"
+# 327 "obj\Debug\AlyoshaLexer.fs"
           )
   | 11 -> ( 
-# 35 "AlyoshaLexer.fsl"
+# 39 "AlyoshaLexer.fsl"
                          NOTGREATER
-# 329 "obj\Debug\AlyoshaLexer.fs"
+# 332 "obj\Debug\AlyoshaLexer.fs"
           )
   | 12 -> ( 
-# 36 "AlyoshaLexer.fsl"
+# 40 "AlyoshaLexer.fsl"
                          FUNARROW
-# 334 "obj\Debug\AlyoshaLexer.fs"
+# 337 "obj\Debug\AlyoshaLexer.fs"
           )
   | 13 -> ( 
-# 38 "AlyoshaLexer.fsl"
+# 42 "AlyoshaLexer.fsl"
                             BOOLVAL (true) 
-# 339 "obj\Debug\AlyoshaLexer.fs"
+# 342 "obj\Debug\AlyoshaLexer.fs"
           )
   | 14 -> ( 
-# 39 "AlyoshaLexer.fsl"
+# 43 "AlyoshaLexer.fsl"
                              BOOLVAL (false) 
-# 344 "obj\Debug\AlyoshaLexer.fs"
+# 347 "obj\Debug\AlyoshaLexer.fs"
           )
   | 15 -> ( 
-# 41 "AlyoshaLexer.fsl"
+# 45 "AlyoshaLexer.fsl"
                         SEMICOLON
-# 349 "obj\Debug\AlyoshaLexer.fs"
+# 352 "obj\Debug\AlyoshaLexer.fs"
           )
   | 16 -> ( 
-# 42 "AlyoshaLexer.fsl"
+# 46 "AlyoshaLexer.fsl"
                         COLON
-# 354 "obj\Debug\AlyoshaLexer.fs"
+# 357 "obj\Debug\AlyoshaLexer.fs"
           )
   | 17 -> ( 
-# 43 "AlyoshaLexer.fsl"
+# 47 "AlyoshaLexer.fsl"
                         EQUAL
-# 359 "obj\Debug\AlyoshaLexer.fs"
+# 362 "obj\Debug\AlyoshaLexer.fs"
           )
   | 18 -> ( 
-# 44 "AlyoshaLexer.fsl"
+# 48 "AlyoshaLexer.fsl"
                              PROGRAM
-# 364 "obj\Debug\AlyoshaLexer.fs"
+# 367 "obj\Debug\AlyoshaLexer.fs"
           )
   | 19 -> ( 
-# 45 "AlyoshaLexer.fsl"
+# 49 "AlyoshaLexer.fsl"
                            UNION
-# 369 "obj\Debug\AlyoshaLexer.fs"
+# 372 "obj\Debug\AlyoshaLexer.fs"
           )
   | 20 -> ( 
-# 46 "AlyoshaLexer.fsl"
+# 50 "AlyoshaLexer.fsl"
                          OF
-# 374 "obj\Debug\AlyoshaLexer.fs"
+# 377 "obj\Debug\AlyoshaLexer.fs"
           )
   | 21 -> ( 
-# 47 "AlyoshaLexer.fsl"
+# 51 "AlyoshaLexer.fsl"
                           LET
-# 379 "obj\Debug\AlyoshaLexer.fs"
+# 382 "obj\Debug\AlyoshaLexer.fs"
           )
   | 22 -> ( 
-# 48 "AlyoshaLexer.fsl"
+# 52 "AlyoshaLexer.fsl"
                           REC
-# 384 "obj\Debug\AlyoshaLexer.fs"
+# 387 "obj\Debug\AlyoshaLexer.fs"
           )
   | 23 -> ( 
-# 49 "AlyoshaLexer.fsl"
+# 53 "AlyoshaLexer.fsl"
                           ANDREC
-# 389 "obj\Debug\AlyoshaLexer.fs"
+# 392 "obj\Debug\AlyoshaLexer.fs"
           )
   | 24 -> ( 
-# 50 "AlyoshaLexer.fsl"
+# 54 "AlyoshaLexer.fsl"
                          IF
-# 394 "obj\Debug\AlyoshaLexer.fs"
+# 397 "obj\Debug\AlyoshaLexer.fs"
           )
   | 25 -> ( 
-# 51 "AlyoshaLexer.fsl"
+# 55 "AlyoshaLexer.fsl"
                           THEN
-# 399 "obj\Debug\AlyoshaLexer.fs"
+# 402 "obj\Debug\AlyoshaLexer.fs"
           )
   | 26 -> ( 
-# 52 "AlyoshaLexer.fsl"
+# 56 "AlyoshaLexer.fsl"
                          FI
-# 404 "obj\Debug\AlyoshaLexer.fs"
+# 407 "obj\Debug\AlyoshaLexer.fs"
           )
   | 27 -> ( 
-# 53 "AlyoshaLexer.fsl"
+# 57 "AlyoshaLexer.fsl"
                           ELIF
-# 409 "obj\Debug\AlyoshaLexer.fs"
+# 412 "obj\Debug\AlyoshaLexer.fs"
           )
   | 28 -> ( 
-# 54 "AlyoshaLexer.fsl"
+# 58 "AlyoshaLexer.fsl"
                           ELSE
-# 414 "obj\Debug\AlyoshaLexer.fs"
+# 417 "obj\Debug\AlyoshaLexer.fs"
           )
   | 29 -> ( 
-# 55 "AlyoshaLexer.fsl"
+# 59 "AlyoshaLexer.fsl"
                            WHILE
-# 419 "obj\Debug\AlyoshaLexer.fs"
+# 422 "obj\Debug\AlyoshaLexer.fs"
           )
   | 30 -> ( 
-# 56 "AlyoshaLexer.fsl"
+# 60 "AlyoshaLexer.fsl"
                          DO
-# 424 "obj\Debug\AlyoshaLexer.fs"
+# 427 "obj\Debug\AlyoshaLexer.fs"
           )
   | 31 -> ( 
-# 57 "AlyoshaLexer.fsl"
+# 61 "AlyoshaLexer.fsl"
                          OD
-# 429 "obj\Debug\AlyoshaLexer.fs"
+# 432 "obj\Debug\AlyoshaLexer.fs"
           )
   | 32 -> ( 
-# 58 "AlyoshaLexer.fsl"
+# 62 "AlyoshaLexer.fsl"
                              READNUM
-# 434 "obj\Debug\AlyoshaLexer.fs"
+# 437 "obj\Debug\AlyoshaLexer.fs"
           )
   | 33 -> ( 
-# 59 "AlyoshaLexer.fsl"
+# 63 "AlyoshaLexer.fsl"
                              READLINE
-# 439 "obj\Debug\AlyoshaLexer.fs"
+# 442 "obj\Debug\AlyoshaLexer.fs"
           )
   | 34 -> ( 
-# 60 "AlyoshaLexer.fsl"
+# 64 "AlyoshaLexer.fsl"
                            WRITE
-# 444 "obj\Debug\AlyoshaLexer.fs"
+# 447 "obj\Debug\AlyoshaLexer.fs"
           )
   | 35 -> ( 
-# 61 "AlyoshaLexer.fsl"
+# 65 "AlyoshaLexer.fsl"
                           FUN
-# 449 "obj\Debug\AlyoshaLexer.fs"
+# 452 "obj\Debug\AlyoshaLexer.fs"
           )
   | 36 -> ( 
-# 62 "AlyoshaLexer.fsl"
+# 66 "AlyoshaLexer.fsl"
                           NUF
-# 454 "obj\Debug\AlyoshaLexer.fs"
+# 457 "obj\Debug\AlyoshaLexer.fs"
           )
   | 37 -> ( 
-# 63 "AlyoshaLexer.fsl"
+# 67 "AlyoshaLexer.fsl"
                            MATCH
-# 459 "obj\Debug\AlyoshaLexer.fs"
+# 462 "obj\Debug\AlyoshaLexer.fs"
           )
   | 38 -> ( 
-# 64 "AlyoshaLexer.fsl"
+# 68 "AlyoshaLexer.fsl"
                           WITH
-# 464 "obj\Debug\AlyoshaLexer.fs"
+# 467 "obj\Debug\AlyoshaLexer.fs"
           )
   | 39 -> ( 
-# 65 "AlyoshaLexer.fsl"
+# 69 "AlyoshaLexer.fsl"
                                 ENDMATCH
-# 469 "obj\Debug\AlyoshaLexer.fs"
+# 472 "obj\Debug\AlyoshaLexer.fs"
           )
   | 40 -> ( 
-# 69 "AlyoshaLexer.fsl"
+# 73 "AlyoshaLexer.fsl"
                         EQUAL
-# 474 "obj\Debug\AlyoshaLexer.fs"
+# 477 "obj\Debug\AlyoshaLexer.fs"
           )
   | 41 -> ( 
-# 70 "AlyoshaLexer.fsl"
+# 74 "AlyoshaLexer.fsl"
                         PIPE
-# 479 "obj\Debug\AlyoshaLexer.fs"
+# 482 "obj\Debug\AlyoshaLexer.fs"
           )
   | 42 -> ( 
-# 71 "AlyoshaLexer.fsl"
+# 75 "AlyoshaLexer.fsl"
                         GREATER
-# 484 "obj\Debug\AlyoshaLexer.fs"
+# 487 "obj\Debug\AlyoshaLexer.fs"
           )
   | 43 -> ( 
-# 72 "AlyoshaLexer.fsl"
+# 76 "AlyoshaLexer.fsl"
                         LESS
-# 489 "obj\Debug\AlyoshaLexer.fs"
+# 492 "obj\Debug\AlyoshaLexer.fs"
           )
   | 44 -> ( 
-# 74 "AlyoshaLexer.fsl"
+# 78 "AlyoshaLexer.fsl"
                         PLUS
-# 494 "obj\Debug\AlyoshaLexer.fs"
+# 497 "obj\Debug\AlyoshaLexer.fs"
           )
   | 45 -> ( 
-# 75 "AlyoshaLexer.fsl"
+# 79 "AlyoshaLexer.fsl"
                         MINUS
-# 499 "obj\Debug\AlyoshaLexer.fs"
+# 502 "obj\Debug\AlyoshaLexer.fs"
           )
   | 46 -> ( 
-# 76 "AlyoshaLexer.fsl"
+# 80 "AlyoshaLexer.fsl"
                         MUL
-# 504 "obj\Debug\AlyoshaLexer.fs"
+# 507 "obj\Debug\AlyoshaLexer.fs"
           )
   | 47 -> ( 
-# 77 "AlyoshaLexer.fsl"
+# 81 "AlyoshaLexer.fsl"
                         DIV
-# 509 "obj\Debug\AlyoshaLexer.fs"
+# 512 "obj\Debug\AlyoshaLexer.fs"
           )
   | 48 -> ( 
-# 78 "AlyoshaLexer.fsl"
+# 82 "AlyoshaLexer.fsl"
                         MOD
-# 514 "obj\Debug\AlyoshaLexer.fs"
+# 517 "obj\Debug\AlyoshaLexer.fs"
           )
   | 49 -> ( 
-# 80 "AlyoshaLexer.fsl"
+# 84 "AlyoshaLexer.fsl"
                         LPAREN
-# 519 "obj\Debug\AlyoshaLexer.fs"
+# 522 "obj\Debug\AlyoshaLexer.fs"
           )
   | 50 -> ( 
-# 81 "AlyoshaLexer.fsl"
+# 85 "AlyoshaLexer.fsl"
                         RPAREN
-# 524 "obj\Debug\AlyoshaLexer.fs"
+# 527 "obj\Debug\AlyoshaLexer.fs"
           )
   | 51 -> ( 
-# 82 "AlyoshaLexer.fsl"
+# 86 "AlyoshaLexer.fsl"
                         LBRACE
-# 529 "obj\Debug\AlyoshaLexer.fs"
+# 532 "obj\Debug\AlyoshaLexer.fs"
           )
   | 52 -> ( 
-# 83 "AlyoshaLexer.fsl"
+# 87 "AlyoshaLexer.fsl"
                         RBRACE
-# 534 "obj\Debug\AlyoshaLexer.fs"
+# 537 "obj\Debug\AlyoshaLexer.fs"
           )
   | 53 -> ( 
-# 86 "AlyoshaLexer.fsl"
+# 90 "AlyoshaLexer.fsl"
                        ID (lexeme lexbuf)
-# 539 "obj\Debug\AlyoshaLexer.fs"
+# 542 "obj\Debug\AlyoshaLexer.fs"
           )
   | 54 -> ( 
-# 88 "AlyoshaLexer.fsl"
+# 92 "AlyoshaLexer.fsl"
                         EOF
-# 544 "obj\Debug\AlyoshaLexer.fs"
+# 547 "obj\Debug\AlyoshaLexer.fs"
           )
   | _ -> failwith "tokenize"
 
-# 90 "AlyoshaLexer.fsl"
+# 94 "AlyoshaLexer.fsl"
 
 # 3000000 "obj\Debug\AlyoshaLexer.fs"

@@ -8,6 +8,7 @@ open AlyoshaAST
 open AlyoshaParser
 open AlyoshaLexer
 open Typer
+open Scoper
 
 
 let parseFromFile (fileName : string) =
@@ -23,7 +24,7 @@ let parseFromString code =
 
 [<EntryPoint>]
 let main argv = 
-    let ast = parseFromFile "..\..\..\CodeSamples\sample4.txt"
+    let ast = parseFromFile "..\..\..\CodeSamples\sample3.txt"
     let table = checkProgram ast
-    //let ast = parseFromString "x"
+    let scopes, stringConstantsDict = GetScopes ast table
     0 // return an integer exit code

@@ -1,9 +1,157 @@
 ﻿module Scoper
 
 open AlyoshaAST
-open Scopes
+open FunScopes
 open VariablesInformation
 
-//let getScopes ast =
+open System.Collections.Generic
 
+exception NotDefinedYetException of string
+
+type StringConstantsDictionary (stringConstants : string []) =
+    
+    let constants = stringConstants
+    let dict = 
+        let res = new Dictionary<string, int>()
+        for i = 0 to stringConstants.Length - 1 do
+            res.[stringConstants.[i]] <- i
+        res
+
+    member this.getString n = constants.[n]
+    member this.getIndex s = dict.[s] 
+
+let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
+    let res = new ResizeArray<Scope>()
+    let scopeNumber = ref -1
+    let depthCounter = ref -1
+    let mainScopeStList = match ast with Program (_, _, Block x)-> x
+    let stringConstants = new ResizeArray<string>()
+    
+    let rec makeScope naturalParameters (ownName : int) (corecursiveFuns : Set<int>) (stList : expression list )=
+        incr scopeNumber
+        incr depthCounter
+        let itsNumber = !scopeNumber
+        res.Add null
+        let usedVariables = new ResizeArray<(int * variableIdScopeRelationType)>()
+        
+        let rec processNaturalParameters = function
+            | [] -> ()
+            | np :: nps -> 
+            tableOfSymbols.[np].ScopeInfo <- itsNumber
+            usedVariables.Add (np, NaturalParameter)
+        processNaturalParameters naturalParameters
+
+        let usedVariablesSet =  ref (Set.ofList naturalParameters)
+        let numberOfAbstractionsCreated = ref 0
+
+        let processInnerVariable tableId =
+            usedVariablesSet := Set.add tableId !usedVariablesSet
+            usedVariables.Add (tableId, InnerVariable)
+            tableOfSymbols.[tableId].ScopeInfo <- itsNumber
+
+        let processVariableId tableId =
+            if (!usedVariablesSet).Contains tableId |> not then
+                //if it was inner parameter, it would be there
+                //so it can be own name, co-recursive fun or external parameter
+                if tableId = ownName || corecursiveFuns.Contains tableId then ()
+                else 
+                    usedVariables.Add(tableId, ExternalParameter)
+                usedVariablesSet := Set.add tableId !usedVariablesSet
+
+        let rec processBlock blk =
+            unboxBlock blk |> List.iter processStatement
+
+        and processStatement = function
+            | Statement stmnt -> 
+                match stmnt with
+                | LetAssignment ass ->
+                    match ass with
+                    | UsualAssignment ((_, tableId), expr) ->
+                        processInnerVariable !tableId
+                        processStatement expr
+                    | ReadNum (_, tableId) -> processInnerVariable !tableId
+                    | ReadLine (_, tableId) -> processInnerVariable !tableId
+
+                | LetRecursiveAssignment asss ->
+                    let corecursiveIds, _, _ = List.unzip3 asss
+                    let corecursiveIdSet = corecursiveIds |> List.map (fun (x, y) -> !y) |> Set.ofList
+                    corecursiveIds |> List.iter
+                        (fun (_, x) -> processInnerVariable !x)
+                    for ((_, tableId), args, valueExpr) in asss do
+                        let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
+                        let newUsedVariables = makeScope newNaturalParameters !tableId (Set.remove !tableId corecursiveIdSet) [valueExpr]
+                        Set.iter processVariableId newUsedVariables
+                        incr numberOfAbstractionsCreated
+                    
+                | Assignment ass ->
+                    match ass with
+                    | UsualAssignment ((_, tableId), expr) ->
+                        processVariableId !tableId
+                        processStatement expr
+                    | ReadNum (_, tableId) -> processVariableId !tableId
+                    | ReadLine (_, tableId) -> processVariableId !tableId
+                | IfStatement (condition, trueBlock, elifList, elseBlock) ->
+                    processStatement condition
+                    processBlock trueBlock
+                    elifList |> List.iter 
+                        (fun (x, y) ->
+                            processStatement x
+                            processBlock y
+                        )
+                    match elseBlock with
+                    | Some eb -> processBlock eb
+                    | None -> ()
+
+                | WhileStatement (expr, whileBlock) ->
+                    processStatement expr
+                    processBlock whileBlock
+
+                | WriteStatement expr -> processStatement expr
+                | MatchStatement _ -> raise (NotDefinedYetException "Match statements in scoper")
+
+            | OrList exprs
+            | AndList exprs -> 
+                exprs |> List.iter processStatement
+            | Not expr -> processStatement expr
+            | IsEqual (expr1, expr2)
+            | NotEqual (expr1, expr2)
+            | Greater (expr1, expr2)
+            | Less (expr1, expr2)
+            | NotGreater (expr1, expr2)
+            | NotLess (expr1, expr2)
+            | Mod (expr1, expr2) ->
+                processStatement expr1
+                processStatement expr2
+            | Sum operands ->
+                operands |> List.iter (fun (x, y) -> processStatement y)
+            | Mult operands ->
+                operands |> List.iter (fun (x, y) -> processStatement y)
+            | SequenceExpression (Block x) ->
+                x |> List.iter processStatement
+            | ExprId (_, tableId) ->
+                processVariableId !tableId
+            | Abstraction (args, value) -> 
+                let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
+                let newUsedVariables = makeScope newNaturalParameters -1 Set.empty [value]
+                Set.iter processVariableId newUsedVariables
+                incr numberOfAbstractionsCreated
+            | Application (appF, args) ->
+                processStatement appF
+                args |> List.iter processStatement
+            | NumVal _ -> ()
+            | BoolVal _ -> ()
+            | StringVal stringVal ->
+                stringConstants.Add stringVal
+            | UnitVal -> ()
+
+
+        stList |> List.iter processStatement
+
+        let resScope = new Scope(itsNumber, !depthCounter, ownName, corecursiveFuns, List.ofSeq usedVariables, !numberOfAbstractionsCreated)
+        res.[itsNumber] <- resScope
+        decr depthCounter
+        !usedVariablesSet |> Set.filter (fun x -> tableOfSymbols.[x].ScopeInfo < itsNumber)
+    
+    makeScope [] -1 Set.empty mainScopeStList |> ignore
+    res, (new StringConstantsDictionary(stringConstants.ToArray()))
     

@@ -1,10 +1,10 @@
 ﻿module VariablesInformation
 
 open Types
-open Scopes
+open FunScopes
 
 type varIdInformation = {
     mutable Type : alyoshaType;
-    mutable ScopeInfo : varIdScopeInfo;
+    mutable ScopeInfo : varScopeInfo;
     }
 
