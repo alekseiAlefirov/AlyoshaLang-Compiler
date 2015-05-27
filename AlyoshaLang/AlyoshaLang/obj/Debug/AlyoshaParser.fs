@@ -859,7 +859,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 92 "AlyoshaParser.fsy"
-                                                                              LetRecursiveAssignment( (_3, _4, _6) :: _7 ) 
+                                                                              LetRecursiveAssignment( (_3, _4, _6, ref -1) :: _7 ) 
                    )
 # 92 "AlyoshaParser.fsy"
                  : 'LetRecursiveAssignment));
@@ -873,7 +873,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 95 "AlyoshaParser.fsy"
-                                                                             (_2, _3, _5) :: _6 
+                                                                             (_2, _3, _5, ref -1) :: _6 
                    )
 # 95 "AlyoshaParser.fsy"
                  : 'RecAndList));
@@ -1197,7 +1197,7 @@ let _fsyacc_reductions ()  =    [|
                 (
                    (
 # 151 "AlyoshaParser.fsy"
-                                                               Abstraction (_2, _4) 
+                                                               Abstraction (_2, _4, ref -1) 
                    )
 # 151 "AlyoshaParser.fsy"
                  : 'Abstraction));

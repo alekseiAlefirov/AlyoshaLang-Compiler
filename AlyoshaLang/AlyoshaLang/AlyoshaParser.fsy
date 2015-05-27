@@ -89,10 +89,10 @@ LetAssignment :
 	| LET Assignment		{ LetAssignment $2 }
 
 LetRecursiveAssignment :
-	| LET REC Id FunArguments EQUAL Expression RecAndList { LetRecursiveAssignment( ($3, $4, $6) :: $7 ) }
+	| LET REC Id FunArguments EQUAL Expression RecAndList { LetRecursiveAssignment( ($3, $4, $6, ref -1) :: $7 ) }
 
 RecAndList :
-	| ANDREC Id FunArguments EQUAL Expression RecAndList	{ ($2, $3, $5) :: $6 }
+	| ANDREC Id FunArguments EQUAL Expression RecAndList	{ ($2, $3, $5, ref -1) :: $6 }
 	|														{ [] }
 
 IfStatement : 
@@ -148,7 +148,7 @@ ApplicantsList :
 	| Expression					{ [ $1 ] }
 
 Abstraction :
-	| FUN FunArguments FUNARROW Expression	{ Abstraction ($2, $4) }
+	| FUN FunArguments FUNARROW Expression	{ Abstraction ($2, $4, ref -1) }
 
 FunArguments :
 	| UNIT		{ [] }

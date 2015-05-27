@@ -11,11 +11,11 @@ type variableIdScopeRelationType =
 
 [<AllowNullLiteralAttribute>]
 type Scope(id : int, 
-            depth : int, 
+            depth : int,
+            parentScope : int,
             ownName : int, //for scopes of recursive funs
             corecursiveFuns : Set<int>,
-            usedVariables : (int * variableIdScopeRelationType) list, 
-            numberOfAbstractionsCreated : int) =
+            usedVariables : (int * variableIdScopeRelationType) list) =
     
     let externalParameters, naturalParametersNotSorted, innerVariables =
         let rec divide epAcc npAcc ivAcc = function
@@ -47,8 +47,7 @@ type Scope(id : int,
 
     member this.Id = id
     member this.Depth = depth
-    //abstractions, that were not assigned by the end of the scope, have to be deleted
-    member this.NumberOfAbstractionsCreated = numberOfAbstractionsCreated
+    member this.ParentScope = parentScope
     member this.ExternalParameters = externalParameters
     member this.NaturalParameters = naturalParameters
     member this.InnerVariables = innerVariables

@@ -27,7 +27,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
     let mainScopeStList = match ast with Program (_, _, Block x)-> x
     let stringConstants = new ResizeArray<string>()
     
-    let rec makeScope naturalParameters (ownName : int) (corecursiveFuns : Set<int>) (stList : expression list )=
+    let rec makeScope naturalParameters (parentScope : int) (ownName : int) (corecursiveFuns : Set<int>) (stList : expression list )=
         incr scopeNumber
         incr depthCounter
         let itsNumber = !scopeNumber
@@ -42,7 +42,6 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
         processNaturalParameters naturalParameters
 
         let usedVariablesSet =  ref (Set.ofList naturalParameters)
-        let numberOfAbstractionsCreated = ref 0
 
         let processInnerVariable tableId =
             usedVariablesSet := Set.add tableId !usedVariablesSet
@@ -73,15 +72,20 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                     | ReadLine (_, tableId) -> processInnerVariable !tableId
 
                 | LetRecursiveAssignment asss ->
-                    let corecursiveIds, _, _ = List.unzip3 asss
+                    let rec unzip4 = function
+                    | [] -> ([], [], [], [])
+                    | (a, b, c, d) :: t ->
+                        let at, bt, ct, dt = unzip4 t
+                        (a::at, b::bt, c::ct, d::dt)
+                    let corecursiveIds, _, _, _ = unzip4 asss
                     let corecursiveIdSet = corecursiveIds |> List.map (fun (x, y) -> !y) |> Set.ofList
                     corecursiveIds |> List.iter
                         (fun (_, x) -> processInnerVariable !x)
-                    for ((_, tableId), args, valueExpr) in asss do
+                    for ((_, tableId), args, valueExpr, scopeId) in asss do
                         let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
-                        let newUsedVariables = makeScope newNaturalParameters !tableId (Set.remove !tableId corecursiveIdSet) [valueExpr]
+                        scopeId := !scopeNumber + 1
+                        let newUsedVariables = makeScope newNaturalParameters itsNumber !tableId (Set.remove !tableId corecursiveIdSet) [valueExpr]
                         Set.iter processVariableId newUsedVariables
-                        incr numberOfAbstractionsCreated
                     
                 | Assignment ass ->
                     match ass with
@@ -130,11 +134,11 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                 x |> List.iter processStatement
             | ExprId (_, tableId) ->
                 processVariableId !tableId
-            | Abstraction (args, value) -> 
+            | Abstraction (args, value, scopeId) -> 
                 let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
-                let newUsedVariables = makeScope newNaturalParameters -1 Set.empty [value]
+                scopeId := !scopeNumber + 1
+                let newUsedVariables = makeScope newNaturalParameters itsNumber -1 Set.empty [value]
                 Set.iter processVariableId newUsedVariables
-                incr numberOfAbstractionsCreated
             | Application (appF, args) ->
                 processStatement appF
                 args |> List.iter processStatement
@@ -147,11 +151,11 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
 
         stList |> List.iter processStatement
 
-        let resScope = new Scope(itsNumber, !depthCounter, ownName, corecursiveFuns, List.ofSeq usedVariables, !numberOfAbstractionsCreated)
+        let resScope = new Scope(itsNumber, !depthCounter, parentScope, ownName, corecursiveFuns, List.ofSeq usedVariables)
         res.[itsNumber] <- resScope
         decr depthCounter
         !usedVariablesSet |> Set.filter (fun x -> tableOfSymbols.[x].ScopeInfo < itsNumber)
     
-    makeScope [] -1 Set.empty mainScopeStList |> ignore
+    makeScope [] -1 -1 Set.empty mainScopeStList |> ignore
     res, (new StringConstantsDictionary(stringConstants.ToArray()))
     

@@ -10,7 +10,7 @@ and block = Block of expression list
 
 and statement =
     | LetAssignment of assignment
-    | LetRecursiveAssignment of (varId * (varId list) * expression) list
+    | LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
     | Assignment of assignment
     | IfStatement of (expression * block * ((expression * block) list) * (block option))
     | WhileStatement of expression * block
@@ -45,7 +45,7 @@ and expression =
     
     | SequenceExpression of block
     | ExprId of varId
-    | Abstraction of (varId list) * expression
+    | Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
     | Application of expression * (expression list)
     | NumVal of System.Int32
     | BoolVal of bool

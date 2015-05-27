@@ -247,11 +247,11 @@ let checkProgram (prog : program) =
             let oldFunNamesContext, newFunTypeVariables =
                 let rec processFunNames = function
                     | [] -> []
-                    | ((funName, funTableId), _, _) :: asss-> 
+                    | ((funName, funTableId), _, _, _) :: asss-> 
                         let rec checkThisFunNameIsUnique a =
                             match a with
                             | [] -> true
-                            | ((nextFunName, _), _, _) :: aa ->  
+                            | ((nextFunName, _), _, _, _) :: aa ->  
                                 if nextFunName = funName then false
                                 else checkThisFunNameIsUnique aa
                         if not (checkThisFunNameIsUnique asss) then raise SameNamesForMutuallyRecursiveFunctionsException
@@ -273,10 +273,10 @@ let checkProgram (prog : program) =
             let newConstraints, trueFunTypes =
                 let rec processTheirAbstractions constraints newFunTypeVariables = function
                     | [] -> constraints, []
-                    | ((funName, funTableId), args, funBody) :: asss ->
+                    | ((funName, funTableId), args, funBody, _) :: asss ->
                         match newFunTypeVariables with
                             | funType :: nextFunTypeVariable ->
-                                let abstrBody = Abstraction (args, funBody)
+                                let abstrBody = Abstraction (args, funBody, ref -1)
                                 let newConstraints = getConstraintsFromExpr constraintList funType abstrBody
                                 let trueFunType = funName, (!funTableId, getTypeOfExpr abstrBody, true)
                                 let resConstraints, nextTrueFunTypes = processTheirAbstractions newConstraints nextFunTypeVariable asss
@@ -434,7 +434,7 @@ let checkProgram (prog : program) =
             else
                 raise (IdIsNotDefinedException varName)
 
-        | Abstraction (args, value) -> 
+        | Abstraction (args, value, _) -> 
             let valueType = ConnectionTypeVariable(nextVariableNumId ())
             
             let funType, newOldContext = foldAbstractionArgs args valueType
