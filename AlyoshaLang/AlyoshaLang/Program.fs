@@ -9,6 +9,7 @@ open AlyoshaParser
 open AlyoshaLexer
 open Typer
 open Scoper
+open CodeGenerator
 
 
 let parseFromFile (fileName : string) =
@@ -24,7 +25,12 @@ let parseFromString code =
 
 [<EntryPoint>]
 let main argv = 
-    let ast = parseFromFile "..\..\..\CodeSamples\sample4.txt"
+    let ast = parseFromFile "..\..\..\CodeSamples\sample2.txt"
     let table = checkProgram ast
     let scopes, stringConstantsDict = GetScopes ast table
+    let asmCode = GenerateCode ast table scopes stringConstantsDict
+    
+    use out = new System.IO.StreamWriter(@"c:\temp\asm\pp.asm")
+    out.WriteLine(asmCode)
+    out.Close()
     0 // return an integer exit code
