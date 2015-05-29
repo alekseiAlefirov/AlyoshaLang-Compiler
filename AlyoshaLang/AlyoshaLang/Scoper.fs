@@ -157,5 +157,5 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
         !usedVariablesSet |> Set.filter (fun x -> tableOfSymbols.[x].ScopeInfo < itsNumber)
     
     makeScope [] -1 -1 Set.empty mainScopeStList |> ignore
-    res, (new StringConstantsDictionary(stringConstants.ToArray()))
+    res.ToArray() , (new StringConstantsDictionary(stringConstants.ToArray()))
     

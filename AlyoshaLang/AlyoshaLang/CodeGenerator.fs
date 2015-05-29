@@ -22,7 +22,7 @@ let typeId = function
     | UnitType -> 3
     | FunType -> 4
 
-let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstants =
+let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) stringConstants =
 
     let programName, mainBlock = match ast with Program (pn, _, mb) -> (pn, mb)
     
@@ -65,31 +65,92 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
     let printCode() =
         
         let writeProcName = "writeProc"
+        let readNumProcName = "readNumProc"
+        let currentScope = ref 0
+        let scopeSize n =
+            let theScope = scopes.[n]
+            1 //selfsize
+            + 5       //codeId, isAssigned, mutually recursive funs block ptr, self pointer
+            + 1     //№ of natural parameters
+            + theScope.NaturalParameters.Length * 2
+            + theScope.ExternalParameters.Length * 2
+            + theScope.InnerVariables.Length * 2
+        
+        let scopeSelfPtrOffset = 4 * 4
 
+        let naturalParameterOffsetInScope n m =
+            6 + m*2
+
+        let externalParameterOffsetInScope n m =
+            6 + (scopes.[n].NaturalParameters.Length)*2 + m*2
+
+        let innerVariableOffsetInScope n m =
+            6 + (scopes.[n].NaturalParameters.Length)*2 + (scopes.[n].ExternalParameters.Length)*2 + m*2
+
+        // m for tableId
+        let parameterOffsetInScope n m =
+            let paramType, num = scopes.[n].InScopeVarTable.[m]
+            match paramType with
+            | NaturalParameter -> naturalParameterOffsetInScope n num
+            | ExternalParameter -> externalParameterOffsetInScope n num
+            | InnerVariable -> innerVariableOffsetInScope n num
+            | OwnName
+            | CoRecursiveFun -> invalidArg "parameterOffsetInScope" ""
         (*let printSinglePush x =
             println "%s %s" "push" x*)
 
         let printPushValueFromRegs() =
-            println "push eax"
-            println "push ebx"
+            printIntendln "push eax"
+            printIntendln "push ebx"
 
         (*let printClean() =
             println "mov es"*)
 
         let printCleanStack n =
-            println "add esp, %d" (n*4)
+            printIntendln "add esp, %d" (n*4)
 
         (*let printPushUnit () =
             printSinglePush "0"
             printSinglePush "0" *)
         
         let printRegInt n =
-            println "mov eax, %d" (typeId IntType) 
-            println "mov ebx, %d" n
+            printIntendln "mov eax, %d" (typeId IntType) 
+            printIntendln "mov ebx, %d" n
             
         let printRetUnit() =
-            println "mov eax, %d" (typeId UnitType) 
-            println "mov ebx, 0"    
+            printIntendln "mov eax, %d" (typeId UnitType) 
+            printIntendln "mov ebx, 0"    
+        
+        let printReadNumProcCode() =
+            println "readNumProc:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 12 ; input, stringbuffer, actual length"
+            printIntendln ""
+            printIntendln "invoke GetStdHandle, STD_INPUT_HANDLE"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln ""
+            printIntendln "invoke GetProcessHeap"
+            printIntendln "mov heapHandle, eax"
+            printIntendln ""
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, 10"
+            printIntendln "mov [ebp - 8], eax"
+            printIntendln ""
+            printIntendln "mov ebx, ebp"
+            printIntendln "sub ebx, 12"
+            printIntendln "invoke ReadConsole, [ebp - 4], [ebp - 8], 10, ebx, NULL"
+            printIntendln "mov eax, [ebp - 8]"
+            printIntendln "mov ebx, [ebp - 12]"
+            printIntendln "mov	byte ptr [eax + ebx - 2], 0"
+            printIntendln "invoke atodw, [ebp - 8]"
+            printIntendln "push eax"
+            printIntendln "invoke HeapFree, heapHandle, 0, [ebp - 8]"
+            printIntendln "pop eax"
+            printIntendln ""
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
             
         let printWriteProcCode() =
             let printLengthOfNumber() = 
@@ -270,10 +331,27 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
             printWriteFun()
             printWriteProc()
             
-        
-        let printCleanScopeCode () =
-            //
-            ()       
+        let printCreateScope n =
+            
+            let theScope = scopes.[n]
+            printIntendln "invoke GetProcessHeap"
+            printIntendln "mov heapHandle, eax"
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, %d" ((scopeSize n)*4)
+            //write self size and self pointer
+            printIntendln "mov ebx, %d" (scopeSize n)
+            printIntendln "mov [eax], ebx"
+            printIntendln "mov [eax + %d], eax ;put ptr to created scope in its field" scopeSelfPtrOffset
+
+
+        let printCleanCurrentScopeStack() =     
+            
+            //not sure, if it necessary to invoke GetProcessHeap again to free the memory
+
+            //here should be check if any parameters are ptrs and proper deletion
+
+            printIntendln "mov eax, [esp]"
+            printIntendln "invoke HeapFree, heapHandle, 0, eax"
+            printIntendln "add esp, 4"
 
         let rec printBlock (blk : expression list) =
             match blk with
@@ -282,13 +360,34 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
                 printBlock exprs
             | [] ->
                 //don't forget to save return value
-                printCleanScopeCode()
+                ()
 
         //evaluate expr and mov result to eax and ebx
         and printExpr = function
         | Statement stmnt ->
             match stmnt with
-            //| LetAssignment of assignment
+            | LetAssignment ass ->
+                match ass with
+                | UsualAssignment ((_, tableId), expression) ->
+                    printExpr expression
+
+                    //eax and ebx are occupied
+                    printIntendln "mov ecx, [esp]"
+                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    //add copy code
+                    printIntendln "mov [ecx], eax"
+                    printIntendln "mov [ecx + 4], ebx"
+                    printRetUnit()
+                | ReadNum (_, tableId) ->
+                    printIntendln "call %s" readNumProcName
+                    printIntendln "mov ecx, [esp]"
+                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "mov ebx, %d" (typeId IntType)
+                    printIntendln "mov [ecx], ebx"
+                    printIntendln "mov [ecx + 4], eax"
+                    printRetUnit()
+                //| ReadLine of varId
+                | _ -> raise (NotSupportedYet "CodeGenerator")
             //| LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
             //| Assignment of assignment
             //| IfStatement of (expression * block * ((expression * block) list) * (block option))
@@ -296,7 +395,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
             | WriteStatement expr ->
                 printExpr expr
                 printPushValueFromRegs()
-                println "%s %s" "call" writeProcName
+                printIntendln "%s %s" "call" writeProcName
                 printCleanStack 2
                 printRetUnit()
                 
@@ -319,9 +418,14 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
         | Mult of (mulSign * expression) list
         | Mod of expression * expression
     
-        | SequenceExpression of block
-        | ExprId of varId
-        | Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
+        | SequenceExpression of block*)
+        | ExprId (_, tableId) ->
+            printIntendln "mov ecx, [esp]"
+            printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+            printIntendln "mov eax, [ecx]"
+            printIntendln "mov ebx, [ecx + 4]"
+            
+        (*| Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
         | Application of expression * (expression list)*)
         | NumVal n ->
             printRegInt n
@@ -330,21 +434,27 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols scopes stringConstant
         | UnitVal*)
         | _ -> raise (NotSupportedYet "CodeGenerator")
 
-        //let printWriteCode() =
         //let printReadNumCode() =
         //let printReadLineCode() =
+        //let printInitialize
         //let printAbstractionSwitcher() =
         //let printAbstractionBody(scope : Scope) =
         let printMain() =
+            currentScope := 0
             println "%s %s" programName "PROC"
+            printCreateScope !currentScope
+            printIntendln "push eax"
+
             printBlock(unboxBlock mainBlock)
-            //clean after
+            printCleanCurrentScopeStack()
+            printIntendln("invoke ExitProcess, NULL")
             println "%s %s" programName "ENDP"
         let printEnd() =
             println "%s %s" "end" programName
 
         println(" .code")
         println ""
+        printReadNumProcCode()
         printWriteProcCode()
         printMain()
         printEnd()
