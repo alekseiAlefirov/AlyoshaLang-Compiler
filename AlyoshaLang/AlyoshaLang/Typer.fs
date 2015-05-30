@@ -414,6 +414,11 @@ let checkProgram (prog : program) =
                 getConstraintsFromExpr constraints (TypeVal IntType) expr
             seList |> getSeconds |> List.fold folder ((exprValueType, TypeVal IntType) :: constraintList)
 
+        | StringConcat seList ->
+            let folder constraints expr =
+                getConstraintsFromExpr constraints (TypeVal StringType) expr
+            seList |> List.fold folder ((exprValueType, TypeVal StringType) :: constraintList)
+
         | Mod (expr1, expr2) ->
             let afterFirstConstraints = getConstraintsFromExpr ((exprValueType, TypeVal IntType)::constraintList) (TypeVal IntType) expr1
             getConstraintsFromExpr afterFirstConstraints (TypeVal IntType) expr2

@@ -42,6 +42,8 @@ and expression =
     | Sum of (sumSign * expression) list
     | Mult of (mulSign * expression) list
     | Mod of expression * expression
+
+    | StringConcat of expression list
     
     | SequenceExpression of block
     | ExprId of varId

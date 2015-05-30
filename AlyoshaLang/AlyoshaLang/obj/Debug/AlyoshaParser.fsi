@@ -2,6 +2,7 @@
 module AlyoshaParser
 type token = 
   | EOF
+  | DOG
   | AND
   | OR
   | MATCH
@@ -54,6 +55,7 @@ type token =
   | NUMVAL of (System.Int32)
 type tokenId = 
     | TOKEN_EOF
+    | TOKEN_DOG
     | TOKEN_AND
     | TOKEN_OR
     | TOKEN_MATCH
@@ -144,7 +146,10 @@ type nonTerminalId =
     | NONTERM_RightLogicFactorList
     | NONTERM_LogicFactor
     | NONTERM_CompOp
+    | NONTERM_SumOp
     | NONTERM_ArithmeticOp
+    | NONTERM_StringConcat
+    | NONTERM_StringConcatList
     | NONTERM_RightTermList
     | NONTERM_ArithmeticOpSign
     | NONTERM_Term

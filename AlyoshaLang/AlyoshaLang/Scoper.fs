@@ -17,6 +17,7 @@ type StringConstantsDictionary (stringConstants : string []) =
             res.[stringConstants.[i]] <- i
         res
 
+    member this.Length = constants.Length
     member this.getString n = constants.[n]
     member this.getIndex s = dict.[s] 
 
@@ -130,6 +131,8 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                 operands |> List.iter (fun (x, y) -> processStatement y)
             | Mult operands ->
                 operands |> List.iter (fun (x, y) -> processStatement y)
+            | StringConcat strings ->
+                strings |> List.iter processStatement
             | SequenceExpression (Block x) ->
                 x |> List.iter processStatement
             | ExprId (_, tableId) ->

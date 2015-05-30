@@ -26,6 +26,7 @@ open AlyoshaAST
 %token FUN FUNARROW NUF
 %token MATCH WITH ENDMATCH
 %token AND OR
+%token DOG
 %token EOF
 
 %type < AlyoshaAST.program > start
@@ -171,17 +172,28 @@ LogicFactor:
 	| NOT CompOp	{ Not $2 }
 
 CompOp : 
-	| ArithmeticOp ISEQUAL	  ArithmeticOp { IsEqual ($1, $3) } 
-	| ArithmeticOp NOTEQUAL	  ArithmeticOp { NotEqual ($1, $3) } 
-	| ArithmeticOp GREATER	  ArithmeticOp { Greater ($1, $3) } 
-	| ArithmeticOp NOTLESS	  ArithmeticOp { NotLess ($1, $3) } 
-	| ArithmeticOp LESS		  ArithmeticOp { Less ($1, $3) } 
-	| ArithmeticOp NOTGREATER ArithmeticOp { NotGreater ($1, $3) }
-	| ArithmeticOp						   { $1 }
+	| SumOp ISEQUAL		SumOp	{ IsEqual ($1, $3) } 
+	| SumOp NOTEQUAL	SumOp	{ NotEqual ($1, $3) } 
+	| SumOp GREATER		SumOp	{ Greater ($1, $3) } 
+	| SumOp NOTLESS		SumOp	{ NotLess ($1, $3) } 
+	| SumOp LESS		SumOp	{ Less ($1, $3) } 
+	| SumOp NOTGREATER	SumOp	{ NotGreater ($1, $3) }
+	| SumOp						{ $1 }
+
+SumOp :
+	| ArithmeticOp	{ $1 }
+	| StringConcat	{ $1 }
 
 ArithmeticOp : 
 	| Term RightTermList { Sum ( (Plus, $1) :: $2 ) }
 	| Term				 { $1 }
+
+StringConcat :
+	| SimpleFactor DOG StringConcatList	{StringConcat ($1 :: $3)}
+
+StringConcatList :
+	| SimpleFactor DOG StringConcatList	{ $1 :: $3 }
+	| SimpleFactor						{ [$1] }
 
 RightTermList :
 	| ArithmeticOpSign Term RightTermList	{ ($1, $2) :: $3 }
