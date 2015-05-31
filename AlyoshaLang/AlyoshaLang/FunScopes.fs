@@ -1,5 +1,6 @@
 ﻿module FunScopes
 
+open AlyoshaAST
 open System.Collections.Generic
 
 type variableIdScopeRelationType =
@@ -11,6 +12,7 @@ type variableIdScopeRelationType =
 
 [<AllowNullLiteralAttribute>]
 type Scope(id : int, 
+            bodyAst : expression,
             depth : int,
             parentScope : int,
             ownName : int, //for scopes of recursive funs
@@ -46,6 +48,7 @@ type Scope(id : int,
         res
 
     member this.Id = id
+    member this.Body = bodyAst
     member this.Depth = depth
     member this.ParentScope = parentScope
     member this.ExternalParameters = externalParameters

@@ -25,10 +25,10 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
     let res = new ResizeArray<Scope>()
     let scopeNumber = ref -1
     let depthCounter = ref -1
-    let mainScopeStList = match ast with Program (_, _, Block x)-> x
+    let mainScopeBlock = match ast with Program (_, _, x)-> x
     let stringConstants = new ResizeArray<string>()
     
-    let rec makeScope naturalParameters (parentScope : int) (ownName : int) (corecursiveFuns : Set<int>) (stList : expression list )=
+    let rec makeScope naturalParameters (parentScope : int) (ownName : int) (corecursiveFuns : Set<int>) (body : expression) =
         incr scopeNumber
         incr depthCounter
         let itsNumber = !scopeNumber
@@ -85,7 +85,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                     for ((_, tableId), args, valueExpr, scopeId) in asss do
                         let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
                         scopeId := !scopeNumber + 1
-                        let newUsedVariables = makeScope newNaturalParameters itsNumber !tableId (Set.remove !tableId corecursiveIdSet) [valueExpr]
+                        let newUsedVariables = makeScope  newNaturalParameters itsNumber !tableId (Set.remove !tableId corecursiveIdSet) valueExpr
                         Set.iter processVariableId newUsedVariables
                     
                 | Assignment ass ->
@@ -140,7 +140,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             | Abstraction (args, value, scopeId) -> 
                 let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
                 scopeId := !scopeNumber + 1
-                let newUsedVariables = makeScope newNaturalParameters itsNumber -1 Set.empty [value]
+                let newUsedVariables = makeScope newNaturalParameters itsNumber -1 Set.empty value
                 Set.iter processVariableId newUsedVariables
             | Application (appF, args) ->
                 processStatement appF
@@ -152,13 +152,13 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             | UnitVal -> ()
 
 
-        stList |> List.iter processStatement
+        processStatement body
 
-        let resScope = new Scope(itsNumber, !depthCounter, parentScope, ownName, corecursiveFuns, List.ofSeq usedVariables)
+        let resScope = new Scope(itsNumber, body, !depthCounter, parentScope, ownName, corecursiveFuns, List.ofSeq usedVariables)
         res.[itsNumber] <- resScope
         decr depthCounter
         !usedVariablesSet |> Set.filter (fun x -> tableOfSymbols.[x].ScopeInfo < itsNumber)
     
-    makeScope [] -1 -1 Set.empty mainScopeStList |> ignore
+    makeScope [] -1 -1 Set.empty (SequenceExpression mainScopeBlock) |> ignore
     res.ToArray() , (new StringConstantsDictionary(stringConstants.ToArray()))
     

@@ -53,6 +53,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
     let printData() =
         println(" .data")
         println("heapHandle dd  ?") //handle to operate the heap
+        println("heapObjHandle dd ?")
+        println("_currentDepth dd 0")
         
         println("")
 
@@ -61,7 +63,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             for i = 0 to stringConstants.Length - 1 do
                 println "%s_stringConstant_%d db '%s'" programName i (stringConstants.getString i)
         println(" .const")
-        //print typeIds
+        //TODO: print typeIds
         printStringConstants()
         println "unitStringConstant db '()'"
         println "falseStringConstant db 'false'"
@@ -73,26 +75,32 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         
         let writeProcName = "_writeProc"
         let readNumProcName = "_readNumProc"
+        let isAssignedByte = int (256.0 ** 7.0)
+        //let isRetByte = int (256.0 ** 6.0)
         let currentScope = ref 0
+        let currentScopePtrEbpOffset = 12
         let scopeSize n =
             let theScope = scopes.[n]
             1 //selfsize
-            + 5       //codeId, isAssigned, mutually recursive funs block ptr, self pointer
+            + 4       //codeId, mutually recursive funs block ptr, self pointer
             + 1     //№ of natural parameters
             + theScope.NaturalParameters.Length * 2
+            + 1     //№ of external parameters
             + theScope.ExternalParameters.Length * 2
             + theScope.InnerVariables.Length * 2
         
         let scopeSelfPtrOffset = 4 * 4
+        let scopeNumOfNatParamsOffset = 5 * 4
+        let scopeNumOfExtParamsOffset n = (6 * 4) + (scopes.[n].NaturalParameters.Length * 4)
 
         let naturalParameterOffsetInScope n m =
             6 + m*2
 
         let externalParameterOffsetInScope n m =
-            6 + (scopes.[n].NaturalParameters.Length)*2 + m*2
+            6 + (scopes.[n].NaturalParameters.Length)*2 + 1 + m*2
 
         let innerVariableOffsetInScope n m =
-            6 + (scopes.[n].NaturalParameters.Length)*2 + (scopes.[n].ExternalParameters.Length)*2 + m*2
+            6 + (scopes.[n].NaturalParameters.Length)*2 + 1 + (scopes.[n].ExternalParameters.Length)*2 + m*2
 
         // m for tableId
         let parameterOffsetInScope n m =
@@ -103,15 +111,10 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             | InnerVariable -> innerVariableOffsetInScope n num
             | OwnName
             | CoRecursiveFun -> invalidArg "parameterOffsetInScope" ""
-        (*let printSinglePush x =
-            println "%s %s" "push" x*)
 
         let printPushValueFromRegs() =
             printIntendln "push eax"
             printIntendln "push ebx"
-
-        (*let printClean() =
-            println "mov es"*)
 
         let printCleanStack n =
             printIntendln "add esp, %d" (n*4)
@@ -158,6 +161,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "pop ebp"
             printIntendln ""
             printIntendln "ret"
+
+        
+        //TODO: let printReadLineCode() =
             
         let printWriteProcCode() =
             let printLengthOfNumber() = 
@@ -214,7 +220,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
                 printIntendln "mov [ebp - 8], eax"
 
-                printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, [ebp - 8]"
+                printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, [ebp - 8] + 1; +1 byte for dwtoa, possibly 0 to end"
                 printIntendln "mov [ebp - 12], eax"
 
                 printIntendln "invoke dwtoa, [ebp + 8] , [ebp - 12]"
@@ -390,6 +396,240 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printWriteFun()
             printWriteProc()
             
+        
+        let printAddNewObjCode() =
+            println "_addNewObj:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 8; ptr to last objRecord + new obj"
+            
+            printIntendln "mov ebx, heapObjHandle"
+            printIntendln "mov ebx, [ebx]"
+            printIntendln "cmp ebx, 0"
+            printIntendln "jne _objHandleIsNotEmpty"
+            printIntendln "mov ebx, heapObjHandle"
+            printIntendln "_objHandleIsNotEmpty:"
+            printIntendln "mov [ebp - 4], ebx"
+            printIntendln "invoke HeapAlloc, heapHandle, 9, 16"
+            printIntendln "mov [esp - 8], eax"
+
+            printIntendln "mov ebx, heapObjHandle"
+            printIntendln "mov [ebx], eax"
+
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "mov [eax], ebx"
+            printIntendln "mov ebx, [ebp + 8]"
+            printIntendln "mov [eax + 4], ebx"
+            printIntendln "mov ebx, [ebp - 4]"
+            printIntendln "mov [eax + 8], ebx"
+            printIntendln "mov ebx, _currentDepth"
+            printIntendln "mov [eax + 12], ebx"
+
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        let printCopyObjCode() =
+            println "_copyObj:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            
+            printIntendln "sub esp, 8"
+            printIntendln "mov ebx, [ebp + 8]"
+            printIntendln "mov [ebp - 4], ebx"
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "mov [ebp - 8], ebx"
+            
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "_copyIfFun:"
+            printIntendln "cmp bl, %d" (typeId FunType)
+            printIntendln "jne _copyIfString"
+            printIntendln ";TODO fun copy"
+            printIntendln "jmp _endObjCopy"
+
+            printIntendln "_copyIfString:"
+            printIntendln "cmp bl, %d" (typeId StringType)
+            printIntendln "jne _endObjCopy"
+            printIntendln "mov eax, 0"
+            printIntendln "mov al, bh"
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, eax"
+            printIntendln "mov [ebp - 8], eax"
+            printIntendln "mov edi, eax"
+            printIntendln "mov esi, [ebp + 8]"
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ecx, 0"
+            printIntendln "mov cl, ah"
+            printIntendln "rep movsb"
+            printIntendln "jmp _endObjCopy"
+
+            printIntendln "_endObjCopy: "
+            
+            printIntendln "mov eax, [ebp - 4]"
+            printIntendln "mov ebx, [ebp - 8]"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        let printAssignObjCode() =
+            println "_assignObj:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "rol eax, 8"
+            printIntendln "cmp al, 0"
+            printIntendln "jne _isAlreadyAssigned"
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "add eax, %d" isAssignedByte
+            printIntendln "mov ebx, [ebp + 8]"
+            printIntendln "jmp _retAssignedValue"
+
+            printIntendln "_isAlreadyAssigned:"
+            printIntendln "push [ebp + 12]"
+            printIntendln "push [ebp + 8]"
+            printIntendln "call _copyObj"
+            printIntendln "add esp, 8"
+
+            printIntendln "_retAssignedValue: "
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        let printCleanHeapObjCurrentDepthCode() =
+            println "_cleanHeapObjHandleCurrentDepth:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 4   ;pointer to last obj"
+
+            printIntendln "mov ebx, heapObjHandle"
+            printIntendln "mov ebx, [ebx]"
+            printIntendln "mov [ebp - 4], ebx"
+            
+            printIntendln "_deleteObjRecordsLoop:"
+            printIntendln "mov eax, [ebp - 4]"
+            printIntendln "cmp eax, 0"
+            printIntendln "je _endDeleteObjRecords"
+
+            printIntendln "mov ebx, [eax + 12]"
+            printIntendln "mov ecx, _currentDepth"
+            printIntendln "cmp ebx, ecx"
+            printIntendln "jne _endDeleteObjRecords"
+            printIntendln "mov ecx, [eax + 8]"
+            printIntendln "mov [ebp - 4], ecx"
+            printIntendln "push [eax]"
+            printIntendln "push [eax + 4]"
+            printIntendln "call _deleteObj"
+            printIntendln "add esp, 8"
+
+            printIntendln "_endDeleteObjRecords:"
+            printIntendln "mov ecx, [ebp - 4]"
+            printIntendln "mov [heapObjHandle], ecx"
+
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printDeleteObjCode() =
+            println "_deleteObj:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "_deleteIfFun:"
+            printIntendln "cmp bl, %d" (typeId FunType)
+            printIntendln "jne _deleteIfString"
+            printIntendln ";TODO fun deletion"
+            printIntendln "jmp _endObjDeletion"
+
+            printIntendln "_deleteIfString:"
+            printIntendln "cmp bl, %d" (typeId StringType)
+            printIntendln "jmp _endObjDeletion"
+            
+            printIntendln "_endObjDeletion: "
+            printIntendln "invoke HeapFree, heapHandle, 0, [ebp + 8]"
+
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printStringConcat () =
+            println "_stringConcat:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 8; length and ptr to new string"
+            //collect length
+            printIntendln "mov eax, 0; number of strings"
+            printIntendln "mov ebx, 0; total length"
+            printIntendln "mov edx, ebp; position of string value in stack"
+            printIntendln "add edx, 8"
+            printIntendln "_collectStringLengthLoop:"
+            printIntendln "add eax, 1"
+            printIntendln "add edx, 8"
+            
+            printIntendln "mov ecx, [edx]"
+            printIntendln "mov cl, ch"
+            printIntendln "shl ecx, 24"
+            printIntendln "shr ecx, 24"
+            printIntendln "add ebx, ecx"
+
+            printIntendln "mov ecx, [ebp + 8]"
+            printIntendln "cmp eax, ecx"
+            printIntendln "jne _collectStringLengthLoop"
+            printIntendln "mov [ebp - 4], ebx"
+
+            //not sure heapHandle should be re-initialized
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, [ebp - 4]"
+            printIntendln "mov [ebp - 8], eax"
+
+            //collect res string
+            printIntendln "mov eax, 0; number of strings"
+            printIntendln "mov ebx, [ebp - 8]; position in res string"
+            printIntendln "mov edx, ebp; position of 64b string value in stack"
+            printIntendln "add edx, 8"
+            printIntendln "_collectStringLoop:"
+            printIntendln "add eax, 1"
+            printIntendln "add edx, 8"
+            
+            printIntendln "mov edi, ebx"
+
+            printIntendln "mov ecx, [edx]"
+            printIntendln "mov cl, ch"
+            printIntendln "shl ecx, 24"
+            printIntendln "shr ecx, 24"
+            printIntendln "add ebx, ecx"
+
+            printIntendln "mov esi, [edx - 4]"
+
+            printIntendln "rep movsb"
+
+            printIntendln "mov ecx, [ebp + 8]"
+            printIntendln "cmp eax, ecx"
+            printIntendln "jne _collectStringLoop"
+
+            //res
+            printIntendln "mov eax, [ebp - 4]"
+            printIntendln "shl eax, 8"
+            printIntendln "mov al, %d" (typeId StringType)
+            printIntendln "mov ebx, [ebp - 8]"
+
+            //add an obj record
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _addNewObj"
+            printIntendln "pop ebx"
+            printIntendln "pop eax"
+
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+           
+        
         let printCreateScope n =
             
             let theScope = scopes.[n]
@@ -402,17 +642,34 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov [eax], ebx"
             printIntendln "mov [eax + %d], eax ;put ptr to created scope in its field" scopeSelfPtrOffset
 
+            printIntendln "mov ebx, %d" (theScope.NaturalParameters.Length)
+            printIntendln "mov [eax + %d], ebx ;put number of its natural parameters" scopeNumOfNatParamsOffset
+
+            printIntendln "mov ebx, %d" (theScope.ExternalParameters.Length)
+            printIntendln "mov [eax + %d], ebx ;put number of its external parameters" (scopeNumOfExtParamsOffset n)
 
         let printCleanCurrentScopeStack() =     
             
-            //not sure, if it necessary to invoke GetProcessHeap again to free the memory
+            //not sure, if it is necessary to invoke GetProcessHeap again to free the memory
 
-            //here should be check if any parameters are ptrs and proper deletion
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _copyObj"
+            printIntendln "add esp, 8"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln "mov [ebp - 8], ebx"            
+                        
+            printIntendln "call _cleanHeapObjHandleCurrentDepth"
 
+            printIntendln "pop eax" //ptr to this function
+            printIntendln "sub _currentDepth, 1"
+            //TODO: simple values should not be added
+            printIntendln "call _addNewObj"
+            printIntendln "pop ebx"
             printIntendln "pop eax"
-            printIntendln "invoke HeapFree, heapHandle, 0, eax"
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
+            printIntendln ""
 
         let rec printBlock (blk : expression list) =
             match blk with
@@ -432,16 +689,19 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 | UsualAssignment ((_, tableId), expression) ->
                     printExpr expression
 
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _assignObj"
                     //eax and ebx are occupied
-                    printIntendln "mov ecx, [ebp - 4]"
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
-                    //add copy code
+                    //TODO: add copy code
                     printIntendln "mov [ecx], eax"
                     printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
                 | ReadNum (_, tableId) ->
                     printIntendln "call %s" readNumProcName
-                    printIntendln "mov ecx, [ebp - 4]"
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
                     printIntendln "mov ebx, %d" (typeId IntType)
                     printIntendln "mov [ecx], ebx"
@@ -518,7 +778,22 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 | [] -> ()
                 f t
             | _ -> () //should not happen
-        //| StringConcat strings ->
+        | StringConcat strings ->
+            let count = ref 0
+            let rec f = function
+            | [] -> ()
+            | s :: ss ->
+                incr count
+                f ss
+                printExpr s
+                printIntendln "push eax"
+                printIntendln "push ebx"
+            f strings
+            printIntendln "push %d" !count
+            printIntendln "call _stringConcat"
+            printIntendln "add esp, %d" (((!count)*2 + 1)*4)
+
+                
         | Mod (expr1, expr2) ->
             printExpr expr1
             printIntendln "push ebx"
@@ -528,18 +803,18 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "idiv ebx"
             printIntendln "mov ebx, edx"
             printIntendln "mov eax, %d" (typeId IntType)
-
     
         | SequenceExpression (Block blk) ->
             printBlock blk
         | ExprId (_, tableId) ->
-            printIntendln "mov ecx, [ebp - 4]"
+            printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset
             printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
             printIntendln "mov eax, [ecx]"
             printIntendln "mov ebx, [ecx + 4]"
             
         (*| Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
-        | Application of expression * (expression list)*)
+        | Application of expression * (expression list) ->
+            TODO: here parameters should be put*)
         | NumVal n ->
             printRegInt n
         | BoolVal b ->
@@ -548,28 +823,76 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             | true -> printIntendln "mov ebx, 1"
             | false -> printIntendln "mov ebx, 0"
         | StringVal str ->
-            printIntendln "mov eax, %d" (str.Length * 256 + (typeId StringType))
+            printIntendln "mov eax, %d" (isAssignedByte + str.Length * 256 + (typeId StringType))
             printIntendln "mov ebx, offset %s_stringConstant_%d" programName (stringConstants.getIndex str)
         | UnitVal ->
             printIntendln "mov eax, %d" (typeId UnitType)
             printIntendln "mov ebx, 0"
         | _ -> raise (NotSupportedYet "CodeGenerator")
 
-        //let printReadNumCode() =
-        //let printReadLineCode() =
-        //let printInitialize
-        //let printAbstractionSwitcher() =
-        //let printAbstractionBody(scope : Scope) =
+        let printAbstractionSwitcher() =
+            println "%s_abstraction_switch:" programName
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            for i = 1 to scopes.Length - 2 do
+                printIntendln "_switch_%d:" i
+                printIntendln "mov eax, [ebp + 8]"
+                printIntendln "cmp eax, %d" i
+                printIntendln "jne %s%d" "_switch_" (i+1)
+                printIntendln "call %s_abstraction_scope_%d" programName i
+                printIntendln "jmp _finish_abstraction_switch"
+
+            if scopes.Length > 1 then
+                printIntendln "_switch_%d:" (scopes.Length - 1)
+                printIntendln "mov eax, [ebp + 8]"
+                printIntendln "cmp eax, %d" (scopes.Length - 1)
+                printIntendln "jne %s" "_finish_abstraction_switch"
+                printIntendln "call %s_abstraction_scope_%d" programName (scopes.Length - 1)
+                printIntendln "jmp _finish_abstraction_switch"
+
+            printIntendln "_finish_abstraction_switch:"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        
+        let printAbstractionBodies() =
+            for i = 1 to scopes.Length - 1 do
+                println "%s_abstraction_scope_%d:" programName i
+                printIntendln "push ebp		;save old ebp value"
+                printIntendln "mov ebp, esp	;save pointer to this frame value"
+                printIntendln "sub esp, 8 ;space for result"
+                printIntendln "mov eax, [ebp + 12]"
+                printIntendln "push eax"
+                printExpr scopes.[i].Body
+                printCleanCurrentScopeStack()
+                println "ret"
+                println ""
+        
         let printMain() =
+            
+            let printInitializeHeapObjHandle() =
+                printIntendln "invoke GetProcessHeap"
+                printIntendln "mov heapHandle, eax"
+                printIntendln ""
+                printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, 12"
+                printIntendln "mov heapObjHandle, eax"
+            let printCloseHeapObjHandle() = 
+                printIntendln "invoke HeapFree, heapHandle, 0, heapObjHandle"
+
             currentScope := 0
             println "%s %s" programName "PROC"
             printIntendln "push ebp		;save old ebp value"
             printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printInitializeHeapObjHandle()
             printCreateScope !currentScope
+            printIntendln "sub esp, 8 ;space for result"
             printIntendln "push eax"
 
             printBlock(unboxBlock mainBlock)
             printCleanCurrentScopeStack()
+            printCloseHeapObjHandle()
             printIntendln("invoke ExitProcess, NULL")
             println "%s %s" programName "ENDP"
         let printEnd() =
@@ -579,6 +902,12 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         println ""
         printReadNumProcCode()
         printWriteProcCode()
+        printCopyObjCode()
+        printAssignObjCode()
+        printAddNewObjCode()
+        printDeleteObjCode()
+        printCleanHeapObjCurrentDepthCode()
+        printStringConcat()
         printMain()
         printEnd()
 
