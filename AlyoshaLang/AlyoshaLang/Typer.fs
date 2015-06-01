@@ -337,30 +337,33 @@ let checkProgram (prog : program) =
             | LetRecursiveAssignment _ -> //it has to be the last expression in the block
                 raise (LetDefinitionIsFollowedByNothingException "Some recursive definition")
             | Reassignment ass -> 
-                let newConstraints = 
+                let newConstraints =
                     match ass with
-                    | UsualAssignment ((varName, _), expr) ->
+                    | UsualAssignment ((varName, tableId), expr) ->
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, boundType, _) ->
+                        | Some (realTableId, boundType, _) ->
+                            if !tableId = -1 then tableId := realTableId
                             let inType = ConnectionTypeVariable (nextVariableNumId())
                             getConstraintsFromExpr ((boundType, RefType(inType)) :: constraintList) inType expr
                         | None -> 
                             raise (ReassignNotDefinedReferenceException varName)
-                    | ReadNum (varName, _) -> 
+                    | ReadNum (varName, tableId) -> 
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, boundType, _) ->
+                        | Some (realTableId, boundType, _) ->
+                            if !tableId = -1 then tableId := realTableId
                             (boundType, RefType (TypeVal IntType)) :: constraintList
                         | None -> 
                             raise (ReassignNotDefinedReferenceException varName)
-                    | ReadLine (varName, _) ->
+                    | ReadLine (varName, tableId) ->
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, boundType, _) ->
+                        | Some (realTableId, boundType, _) ->
+                            if !tableId = -1 then tableId := realTableId
                             (boundType, RefType (TypeVal StringType)) :: constraintList
                         | None -> 
-                            raise (ReassignNotDefinedReferenceException varName)
+                            raise (ReassignNotDefinedReferenceException varName)                    
                 (exprValueType, TypeVal UnitType) :: newConstraints
 
             | IfStatement (condition, trueBlock, elifList, elseBlock) ->

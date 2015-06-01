@@ -900,6 +900,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "push eax"
                     printIntendln "push ebx"
                     printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
@@ -917,17 +918,36 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 //| ReadLine of varId
                 | _ -> raise (NotSupportedYet "CodeGenerator")
             //| LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
-            (*| Assignment ass ->
+            | Reassignment ass ->
                 match ass with
                 | UsualAssignment ((_, tableId), expression) ->
                     printExpr expression
 
                     printIntendln "push eax"
                     printIntendln "push ebx"
-                    printIntendln "call _assignObj"
-                    //eax and ebx are occupied
+
+                    //delete old value
+                    let pois = parameterOffsetInScope !currentScope !tableId
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "push [ecx]"
+                    printIntendln "push [ecx + 4]"
+                    printIntendln "call _deleteObj"
+                    printIntendln "add esp, 8"
+
+
+                    printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
+                    
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _makeARef"
+                    printIntendln "add esp, 8"
+
+                    printIntendln "add eax, %d" isAssignedByte
+                    //eax and ebx are occupied
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" pois
                     printIntendln "mov [ecx], eax"
                     printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
@@ -940,7 +960,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "mov [ecx + 4], eax"
                     printRetUnit()
                 //| ReadLine of varId
-                | _ -> raise (NotSupportedYet "CodeGenerator")*)
+                | _ -> raise (NotSupportedYet "CodeGenerator")
             //| IfStatement of (expression * block * ((expression * block) list) * (block option))
             | WhileStatement (expr, (Block blk)) ->
                 let conditionLabel = sprintf "_while_%d_cond" !whileCounter
