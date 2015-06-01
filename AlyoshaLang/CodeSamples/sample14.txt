@@ -1,4 +1,4 @@
 program references
 
-let x = ref 1;
+let x = ref 525;
 write !x
