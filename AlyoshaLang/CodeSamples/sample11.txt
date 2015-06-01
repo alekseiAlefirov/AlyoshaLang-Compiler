@@ -1,3 +1,5 @@
 program concat
 
-write "Hello, " @ "wolrd!!!11"
+let x = "Hello, " @ "wolrd!!!11";
+let y = x;
+write y

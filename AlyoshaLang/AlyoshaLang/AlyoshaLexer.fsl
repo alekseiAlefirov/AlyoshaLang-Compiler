@@ -20,7 +20,7 @@ let id = letter (letter | digit)*
 let num = digit+
 
 let quotes = '"'
-let stringVal = quotes ( digit | letter | whitespace | punctSymbol)* quotes
+let stringVal = quotes ( digit | letter | whitespace | punctSymbol )* quotes
 
 rule tokenize = parse
 | whitespace	{tokenize lexbuf}

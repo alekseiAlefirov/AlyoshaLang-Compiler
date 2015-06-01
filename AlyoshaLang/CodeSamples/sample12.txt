@@ -1,0 +1,12 @@
+program logics
+
+write true || true;
+write true || false;
+write false || true;
+write false || false;
+
+write true && true;
+write true && false;
+write false && true;
+write false && false;
+write not false

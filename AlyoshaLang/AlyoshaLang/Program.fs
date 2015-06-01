@@ -25,7 +25,7 @@ let parseFromString code =
 
 [<EntryPoint>]
 let main argv = 
-    let ast = parseFromFile "..\..\..\CodeSamples\sample11.txt"
+    let ast = parseFromFile "..\..\..\CodeSamples\sample13.txt"
     let table = checkProgram ast
     let scopes, stringConstantsDict = GetScopes ast table
     let asmCode = GenerateCode ast table scopes stringConstantsDict

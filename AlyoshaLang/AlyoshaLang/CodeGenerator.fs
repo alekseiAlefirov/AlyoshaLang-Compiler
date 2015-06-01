@@ -243,7 +243,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 printIntendln "invoke GetStdHandle, STD_OUTPUT_HANDLE"
                 printIntendln "mov [ebp - 4], eax"
 
-                printIntendln "mov eax, [ebp + 4]"
+                printIntendln "mov eax, [ebp + 8]"
                 printIntendln "cmp eax, 0"
                 printIntendln "jne writeBoolTrue"
                 printIntendln "mov [ebp - 8], offset falseStringConstant"
@@ -411,7 +411,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "_objHandleIsNotEmpty:"
             printIntendln "mov [ebp - 4], ebx"
             printIntendln "invoke HeapAlloc, heapHandle, 9, 16"
-            printIntendln "mov [esp - 8], eax"
+            printIntendln "mov [ebp - 8], eax"
 
             printIntendln "mov ebx, heapObjHandle"
             printIntendln "mov [ebx], eax"
@@ -436,9 +436,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov ebp, esp	;save pointer to this frame value"
             
             printIntendln "sub esp, 8"
-            printIntendln "mov ebx, [ebp + 8]"
-            printIntendln "mov [ebp - 4], ebx"
             printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "mov [ebp - 4], ebx"
+            printIntendln "mov ebx, [ebp + 8]"
             printIntendln "mov [ebp - 8], ebx"
             
             printIntendln "mov ebx, [ebp + 12]"
@@ -492,6 +492,12 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "call _copyObj"
             printIntendln "add esp, 8"
 
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _addNewObj"
+            printIntendln "pop ebx"
+            printIntendln "pop eax"
+
             printIntendln "_retAssignedValue: "
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
@@ -526,7 +532,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "_endDeleteObjRecords:"
             printIntendln "mov ecx, [ebp - 4]"
-            printIntendln "mov [heapObjHandle], ecx"
+            printIntendln "mov ebx, heapObjHandle"
+            printIntendln "mov ebx, ecx"
 
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
@@ -556,6 +563,100 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "pop ebp"
             printIntendln ""
             printIntendln "ret"
+
+        let printGreaterCode() =
+            println "_greaterOp:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ebx, [ebp + 8]"
+
+            printIntendln "cmp eax, ebx"
+            printIntendln "jg _isGreater"
+            printIntendln "mov ebx, 0 ;false"
+            printIntendln "jmp _greaterOpFinish"
+
+            printIntendln "_isGreater:"
+            printIntendln "mov ebx, 1 ;true"
+
+            printIntendln "_greaterOpFinish:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+            
+        let printLessCode() =
+            println "_lessOp:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ebx, [ebp + 8]"
+
+            printIntendln "cmp eax, ebx"
+            printIntendln "jl _isLess"
+            printIntendln "mov ebx, 0 ;false"
+            printIntendln "jmp _lessOpFinish"
+
+            printIntendln "_isLess:"
+            printIntendln "mov ebx, 1 ;true"
+
+            printIntendln "_lessOpFinish:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printNotGreaterCode() =
+            println "_notGreaterOp:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ebx, [ebp + 8]"
+
+            printIntendln "cmp eax, ebx"
+            printIntendln "jng _isNotGreater"
+            printIntendln "mov ebx, 0 ;false"
+            printIntendln "jmp _notGreaterOpFinish"
+
+            printIntendln "_isNotGreater:"
+            printIntendln "mov ebx, 1 ;true"
+
+            printIntendln "_notGreaterOpFinish:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printNotLessCode() =
+            println "_notLessOp:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ebx, [ebp + 8]"
+
+            printIntendln "cmp eax, ebx"
+            printIntendln "jnl _isNotLess"
+            printIntendln "mov ebx, 0 ;false"
+            printIntendln "jmp _notLessOpFinish"
+
+            printIntendln "_isNotLess:"
+            printIntendln "mov ebx, 1 ;true"
+
+            printIntendln "_notLessOpFinish:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
 
         let printStringConcat () =
             println "_stringConcat:"
@@ -695,7 +796,6 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
-                    //TODO: add copy code
                     printIntendln "mov [ecx], eax"
                     printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
@@ -722,18 +822,73 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 
             //| MatchStatement of varId * (guard list)
             | _ -> raise (NotSupportedYet "CodeGenerator")
-        (*| OrList of (expression list)
-        | AndList of (expression list)
-    
-        | Not of expression
+        | OrList elist ->
+            match elist with
+            | e :: es ->
+                printExpr e
+                let rec f = function
+                | e :: es -> 
+                    printIntendln "push ebx"
+                    printExpr e
+                    printIntendln "pop eax"
+                    printIntendln "or ebx, eax"
+                    f es
+                | [] -> 
+                    printIntendln "mov eax, %d" (typeId BoolType)
+                f es
+            | [] -> () //should not happen
 
-        | IsEqual of expression * expression
-        | NotEqual of expression * expression
+        | AndList elist ->
+            match elist with
+            | e :: es ->
+                printExpr e
+                let rec f = function
+                | e :: es -> 
+                    printIntendln "push ebx"
+                    printExpr e
+                    printIntendln "pop eax"
+                    printIntendln "and ebx, eax"
+                    f es
+                | [] -> 
+                    printIntendln "mov eax, %d" (typeId BoolType)
+                f es
+            | [] -> () //should not happen
     
-        | Greater of expression * expression
-        | Less of expression * expression
-        | NotGreater of expression * expression
-        | NotLess of expression * expression*)
+        | Not expr ->
+            printExpr expr
+            printIntendln "not ebx"
+
+        //| IsEqual of expression * expression
+        //| NotEqual of expression * expression
+    
+        | Greater (expr1, expr2) ->
+            printExpr expr1
+            printIntendln "push ebx"
+            printExpr expr2
+            printIntendln "push ebx"
+            printIntendln "call _greaterOp"
+            printIntendln "add esp, 8"
+        | Less  (expr1, expr2) ->
+            printExpr expr1
+            printIntendln "push ebx"
+            printExpr expr2
+            printIntendln "push ebx"
+            printIntendln "call _lessOp"
+            printIntendln "add esp, 8"
+        | NotGreater  (expr1, expr2) ->
+            printExpr expr1
+            printIntendln "push ebx"
+            printExpr expr2
+            printIntendln "push ebx"
+            printIntendln "call _notGreaterOp"
+            printIntendln "add esp, 8"
+        | NotLess  (expr1, expr2) ->
+            printExpr expr1
+            printIntendln "push ebx"
+            printExpr expr2
+            printIntendln "push ebx"
+            printIntendln "call _notLessOp"
+            printIntendln "add esp, 8"
 
         | Sum terms ->
             match terms with
@@ -876,7 +1031,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 printIntendln "invoke GetProcessHeap"
                 printIntendln "mov heapHandle, eax"
                 printIntendln ""
-                printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, 12"
+                printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, 4"
                 printIntendln "mov heapObjHandle, eax"
             let printCloseHeapObjHandle() = 
                 printIntendln "invoke HeapFree, heapHandle, 0, heapObjHandle"
@@ -907,6 +1062,10 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         printAddNewObjCode()
         printDeleteObjCode()
         printCleanHeapObjCurrentDepthCode()
+        printGreaterCode()
+        printLessCode()
+        printNotGreaterCode()
+        printNotLessCode()
         printStringConcat()
         printMain()
         printEnd()
