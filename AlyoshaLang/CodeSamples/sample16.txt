@@ -1,0 +1,8 @@
+program ifthenelse
+
+let x = 3;
+if x == 1 then
+	write "its 1" fi
+elif x == 2 then
+	write "its 2" fi
+else write "its not 1 neither 2" fi

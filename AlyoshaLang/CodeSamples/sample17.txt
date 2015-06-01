@@ -1,0 +1,6 @@
+program comparestrings
+
+let x = "Hello";
+let y = ", world!";
+write x == y;
+write x @ y == "Hello, world!"

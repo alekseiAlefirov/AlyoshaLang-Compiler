@@ -25,12 +25,16 @@ let parseFromString code =
 
 [<EntryPoint>]
 let main argv = 
-    let ast = parseFromFile "..\..\..\CodeSamples\sample15.txt"
-    let table = checkProgram ast
-    let scopes, stringConstantsDict = GetScopes ast table
-    let asmCode = GenerateCode ast table scopes stringConstantsDict
+    try
+        let ast = parseFromFile "..\..\..\CodeSamples\sample17.txt"
+        let table = checkProgram ast
+        let scopes, stringConstantsDict = GetScopes ast table
+        let asmCode = GenerateCode ast table scopes stringConstantsDict
     
-    use out = new System.IO.StreamWriter(@"c:\temp\asm\pp.asm")
-    out.WriteLine(asmCode)
-    out.Close()
+        use out = new System.IO.StreamWriter(@"c:\temp\asm\pp.asm")
+        out.WriteLine(asmCode)
+        out.Close()
+    with
+    | Typer.UnifyException -> System.Console.WriteLine("AlyoshaLang-Compiler: type inference error")
+    |  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax error")
     0 // return an integer exit code

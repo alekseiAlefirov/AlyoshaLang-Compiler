@@ -622,6 +622,87 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln ""
             printIntendln "ret"
 
+        let printIsEqualCode() =
+            println "_isEqual:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "mov eax, [ebp + 20]"
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "mov ecx, [ebp + 16]"
+            printIntendln "mov edx, [ebp + 8]"
+
+            printIntendln "cmp al, %d" (typeId IntType)
+            printIntendln "jne _isEqualIfBool"
+            printIntendln "cmp ecx, edx"
+            printIntendln "je _isEqualRetTrue"
+            printIntendln "jmp _isEqualRetFalse"
+
+            printIntendln "_isEqualIfBool:"
+            printIntendln "cmp al, %d" (typeId BoolType)
+            printIntendln "jne _isEqualIfString"
+            printIntendln "cmp ecx, edx"
+            printIntendln "je _isEqualRetTrue"
+            printIntendln "jmp _isEqualRetFalse"
+
+            printIntendln "_isEqualIfString:"
+            printIntendln "cmp al, %d" (typeId StringType)
+            printIntendln "jne _isEqualIfUnit"
+            printIntendln "cmp ah, bh"
+            printIntendln "jne _isEqualRetFalse"
+            printIntendln "mov eax, 0"
+            printIntendln "mov al, bh"
+            printIntendln "jmp _stringCompareCond"
+            printIntendln "_stringCompareLoop:"
+            printIntendln "sub al, 1"
+            printIntendln "mov esi, ecx"
+            printIntendln "add esi, eax"
+            printIntendln "mov edi, edx"
+            printIntendln "add edi, eax"
+
+            printIntendln "mov ebx, 0"
+            printIntendln "mov bh, byte ptr [esi]"
+            printIntendln "mov bl, byte ptr [edi]"
+            printIntendln "cmp bh, bl"
+            printIntendln "jne _isEqualRetFalse"
+
+            printIntendln "_stringCompareCond:"
+            printIntendln "cmp al, 0"
+            printIntendln "jne _stringCompareLoop"
+            printIntendln "jmp _isEqualRetTrue"
+
+            printIntendln "_isEqualIfUnit:"
+            printIntendln "cmp al, %d" (typeId UnitType)
+            printIntendln "jne _isEqualIfFun"
+            printIntendln "jmp _isEqualRetTrue"
+
+            printIntendln "_isEqualIfFun:"
+            printIntendln "cmp al, %d" (typeId FunType)
+            printIntendln "jne _isEqualIfRef"
+            printIntendln "cmp ecx, edx"
+            printIntendln "je _isEqualRetTrue"
+            printIntendln "jmp _isEqualRetFalse"
+
+            printIntendln "_isEqualIfRef:"
+            printIntendln "cmp al, %d" (typeId FunType)
+            printIntendln "jne _isEqualRetFalse"
+            printIntendln "cmp ecx, edx"
+            printIntendln "je _isEqualRetTrue"
+            printIntendln "jmp _isEqualRetFalse"
+
+            printIntendln "_isEqualRetTrue:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+            printIntendln "mov ebx, 1"
+            printIntendln "jmp _isEqualEnd"
+            printIntendln "_isEqualRetFalse:"
+            printIntendln "mov eax, %d" (typeId BoolType)
+            printIntendln "mov ebx, 0"
+
+            printIntendln "_isEqualEnd:"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
         let printGreaterCode() =
             println "_greaterOp:"
             printIntendln "push ebp		;save old ebp value"
@@ -903,14 +984,14 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "add esp, 8"
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov [ecx], eax"
                     printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
                 | ReadNum (_, tableId) ->
                     printIntendln "call %s" readNumProcName
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ebx, %d" (typeId IntType)
                     printIntendln "mov [ecx], ebx"
                     printIntendln "mov [ecx + 4], eax"
@@ -927,9 +1008,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "push ebx"
 
                     //delete old value
-                    let pois = parameterOffsetInScope !currentScope !tableId
+                    let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "add ecx, %d" pois
                     printIntendln "push [ecx]"
                     printIntendln "push [ecx + 4]"
                     printIntendln "call _deleteObj"
@@ -954,14 +1035,63 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 | ReadNum (_, tableId) ->
                     printIntendln "call %s" readNumProcName
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ebx, %d" (typeId IntType)
                     printIntendln "mov [ecx], ebx"
                     printIntendln "mov [ecx + 4], eax"
                     printRetUnit()
                 //| ReadLine of varId
                 | _ -> raise (NotSupportedYet "CodeGenerator")
-            //| IfStatement of (expression * block * ((expression * block) list) * (block option))
+            | IfStatement (condition, trueBlock, elifList, elseBlock) ->
+                let elifCounter = ref 0
+                printExpr condition
+                printIntendln "cmp ebx, 0"
+                match elifList, elseBlock with
+                | _ :: _, _ -> 
+                    printIntendln "je _elif_%d_0" !ifCounter
+                | [], Some _ ->
+                    printIntendln "je _else_%d" !ifCounter
+                | [], None ->
+                    printIntendln "_if_%d_ended" !ifCounter
+
+                printBlock (unboxBlock trueBlock)
+                printIntendln "jmp _if_%d_ended" !ifCounter
+
+                let rec elifListPrint = function
+                    | (condition, body) :: [] ->
+                        printIntendln "_elif_%d_%d:" !ifCounter !elifCounter
+                        printExpr condition
+                        printIntendln "cmp ebx, 0"
+                        match elseBlock with
+                        | Some x ->
+                            printIntendln "je _else_%d" !ifCounter
+                        | None -> printIntendln "je _if_%d_ended" !ifCounter
+                        printBlock (unboxBlock body)
+                        printIntendln "jmp _if_%d_ended" !ifCounter
+                        incr elifCounter
+                    | (condition, body) :: t ->
+                        printIntendln "_elif_%d_%d:" !ifCounter !elifCounter
+                        printExpr condition
+                        printIntendln "cmp ebx, 0"
+                        match elseBlock with
+                        | Some x ->
+                            printIntendln "je _else_%d" !ifCounter
+                        | None -> printIntendln "je _elif_%d_%d" !ifCounter (!elifCounter + 1)
+                        printBlock (unboxBlock body)
+                        printIntendln "jmp _if_%d_ended" !ifCounter
+                        incr elifCounter
+                    | [] -> ()                
+                elifListPrint elifList
+                
+                match elseBlock with
+                | Some blk ->
+                    printIntendln "_else_%d:" !ifCounter
+                    printBlock (unboxBlock blk)
+                | None -> ()
+
+                printIntendln "_if_%d_ended:" !ifCounter
+                incr ifCounter
+
             | WhileStatement (expr, (Block blk)) ->
                 let conditionLabel = sprintf "_while_%d_cond" !whileCounter
                 let bodyLabel = sprintf "_while_%d_body" !whileCounter
@@ -1019,8 +1149,17 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printExpr expr
             printIntendln "not ebx"
 
-        //| IsEqual of expression * expression
-        //| NotEqual of expression * expression
+        | IsEqual (expr1, expr2) ->
+            printExpr expr1
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printExpr expr2
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _isEqual"
+            printIntendln "add esp, 16"
+        | NotEqual (expr1, expr2) ->
+            printExpr (Not (IsEqual (expr1, expr2)))
     
         | Greater (expr1, expr2) ->
             printExpr expr1
@@ -1124,7 +1263,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printBlock blk
         | ExprId (_, tableId) ->
             printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset
-            printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+            printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
             printIntendln "mov eax, [ecx]"
             printIntendln "mov ebx, [ecx + 4]"
             
@@ -1240,6 +1379,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         printAddNewObjCode()
         printDeleteObjCode()
         printCleanHeapObjCurrentDepthCode()
+        printIsEqualCode()
         printGreaterCode()
         printLessCode()
         printNotGreaterCode()
