@@ -11,7 +11,7 @@ and block = Block of expression list
 and statement =
     | LetAssignment of assignment
     | LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
-    | Assignment of assignment
+    | Reassignment of assignment
     | IfStatement of (expression * block * ((expression * block) list) * (block option))
     | WhileStatement of expression * block
     | WriteStatement of expression
@@ -49,6 +49,8 @@ and expression =
     | ExprId of varId
     | Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
     | Application of expression * (expression list)
+    | Reference of expression
+    | Unref of expression
     | NumVal of System.Int32
     | BoolVal of bool
     | StringVal of string

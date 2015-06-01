@@ -88,7 +88,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                         let newUsedVariables = makeScope  newNaturalParameters itsNumber !tableId (Set.remove !tableId corecursiveIdSet) valueExpr
                         Set.iter processVariableId newUsedVariables
                     
-                | Assignment ass ->
+                | Reassignment ass ->
                     match ass with
                     | UsualAssignment ((_, tableId), expr) ->
                         processVariableId !tableId
@@ -145,6 +145,10 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             | Application (appF, args) ->
                 processStatement appF
                 args |> List.iter processStatement
+            | Reference expr ->
+                processStatement expr
+            | Unref expr ->
+                processStatement expr
             | NumVal _ -> ()
             | BoolVal _ -> ()
             | StringVal stringVal ->

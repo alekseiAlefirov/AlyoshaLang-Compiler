@@ -39,8 +39,13 @@ rule tokenize = parse
 | "<="			{NOTGREATER}
 | "->"			{FUNARROW}
 
-| "true"			{ BOOLVAL (true) }
-| "false"			{ BOOLVAL (false) }
+| "ref"			{REF}
+| "!"			{UNREF}
+
+| "true"		{ BOOLVAL (true) }
+| "false"		{ BOOLVAL (false) }
+
+| ":="			{REASSIGN}
 
 | ";"			{SEMICOLON}
 | ":"			{COLON}

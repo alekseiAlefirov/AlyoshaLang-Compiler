@@ -38,10 +38,13 @@ type token =
   | LESS
   | NOTGREATER
   | NOT
+  | REASSIGN
   | EQUAL
   | LET
   | REC
   | ANDREC
+  | REF
+  | UNREF
   | LPAREN
   | RPAREN
   | LBRACE
@@ -91,10 +94,13 @@ type tokenId =
     | TOKEN_LESS
     | TOKEN_NOTGREATER
     | TOKEN_NOT
+    | TOKEN_REASSIGN
     | TOKEN_EQUAL
     | TOKEN_LET
     | TOKEN_REC
     | TOKEN_ANDREC
+    | TOKEN_REF
+    | TOKEN_UNREF
     | TOKEN_LPAREN
     | TOKEN_RPAREN
     | TOKEN_LBRACE
@@ -121,11 +127,11 @@ type nonTerminalId =
     | NONTERM_Block
     | NONTERM_ExpressionSequence
     | NONTERM_Statement
-    | NONTERM_AssignmentAtom
-    | NONTERM_Assignment
     | NONTERM_LetAssignment
     | NONTERM_LetRecursiveAssignment
     | NONTERM_RecAndList
+    | NONTERM_Assignment
+    | NONTERM_Reassignment
     | NONTERM_IfStatement
     | NONTERM_ElifList
     | NONTERM_WhileStatement
@@ -157,6 +163,8 @@ type nonTerminalId =
     | NONTERM_FactorOpSign
     | NONTERM_Factor
     | NONTERM_ModFactor
+    | NONTERM_Reference
+    | NONTERM_Unreference
     | NONTERM_SimpleFactor
     | NONTERM_SimpleValue
     | NONTERM_Id

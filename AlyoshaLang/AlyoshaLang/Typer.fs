@@ -16,8 +16,9 @@ type Substitution = Dictionary<int, alyoshaType> * Dictionary<int, int>
 
 exception UnifyException
 exception NoSuchTypeVariableInSubstitutionException
-exception AssignToFunArgumentIdException of string
-exception AssignNotDefinedVariableException of string
+//exception AssignToFunArgumentIdException of string
+exception ReassignNotDefinedReferenceException of string
+exception ReassignNotTheReferenceException of string
 exception LetDefinitionIsFollowedByNothingException of string
 // exception ElseMissingException
 exception NotDefinedYetException of string
@@ -36,6 +37,7 @@ let rec substituteIntoConstraintList (constraintList : typeConstraint list) (typ
             | ConnectionTypeVariable n1, ConnectionTypeVariable n2 ->
                 if n1 = n2 then typeToSubstitute else intoWhatType
             | FunType (arg, value), _ -> FunType (substituteIntoType arg typeVariable typeToSubstitute, substituteIntoType value typeVariable typeToSubstitute)
+            | RefType inType, _ -> RefType (substituteIntoType inType typeVariable typeToSubstitute)
             | _ -> intoWhatType
 
         let left, right = constr
@@ -64,6 +66,7 @@ let unifyConstraintList nextVarNumberGetter (constraintList : typeConstraint lis
             | ConnectionTypeVariable _ , _ -> c :: (unifyConstraintList (substituteIntoConstraintList cs left right))
             | _ , ConnectionTypeVariable _ -> (right, left) :: (unifyConstraintList (substituteIntoConstraintList cs right left))
             | FunType (arg1, value1), FunType(arg2, value2) -> unifyConstraintList((arg1, arg2)::(value1,value2)::cs)
+            | RefType inType1, RefType inType2 -> unifyConstraintList((inType1, inType2) :: cs)
             | AnyType, t | t , AnyType -> unifyConstraintList ((t, ConnectionTypeVariable (nextVarNumberGetter ())) :: cs)
             | _ -> raise UnifyException
 
@@ -93,6 +96,11 @@ let unifyConstraintList nextVarNumberGetter (constraintList : typeConstraint lis
             | Some x, None -> Some(FunType (x, value))
             | None, Some y -> Some(FunType (arg, y))
             | None, None -> None
+        | RefType inType ->
+            let newInType = substituteInRight inType
+            match newInType with
+            | Some x -> Some (RefType x)
+            | None -> None
         | AnyType -> None
         | TypeScheme _ -> raise UnifyException
 
@@ -127,7 +135,10 @@ let getTypeFromUnifiedSubstitution (unifiedSubstitution : Substitution) resTypeN
             match uV with
             | AnyType | TypeScheme _ -> raise UnifyException
             | TypeVal _ -> fV
-            | FunType (arg, value) -> getFreeVariables arg (getFreeVariables value fV)
+            | RefType inType ->
+                getFreeVariables inType fV
+            | FunType (arg, value) -> 
+                getFreeVariables arg (getFreeVariables value fV)
             | ConnectionTypeVariable n ->
                 if n <= resTypeNum then fV
                 else Set.add n fV
@@ -176,6 +187,7 @@ let checkProgram (prog : program) =
                 match inType with
                 | TypeVal _ -> inType
                 | FunType (arg, value) -> FunType(f arg, f value)
+                | RefType inType -> RefType(f inType)
                 | ConnectionTypeVariable num -> 
                     if newVars.ContainsKey num then
                         newVars.[num]
@@ -324,36 +336,31 @@ let checkProgram (prog : program) =
                     raise (LetDefinitionIsFollowedByNothingException varName)
             | LetRecursiveAssignment _ -> //it has to be the last expression in the block
                 raise (LetDefinitionIsFollowedByNothingException "Some recursive definition")
-            | Assignment ass -> 
+            | Reassignment ass -> 
                 let newConstraints = 
                     match ass with
                     | UsualAssignment ((varName, _), expr) ->
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, _, false) ->
-                            raise (AssignToFunArgumentIdException varName)
-                        | Some (_, boundType, true) ->
-                            getConstraintsFromExpr constraintList boundType expr
+                        | Some (_, boundType, _) ->
+                            let inType = ConnectionTypeVariable (nextVariableNumId())
+                            getConstraintsFromExpr ((boundType, RefType(inType)) :: constraintList) inType expr
                         | None -> 
-                            raise (AssignNotDefinedVariableException varName)
+                            raise (ReassignNotDefinedReferenceException varName)
                     | ReadNum (varName, _) -> 
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, _, false) ->
-                            raise (AssignToFunArgumentIdException varName)
-                        | Some (_, boundType, true) ->
-                            (boundType, TypeVal IntType) :: constraintList
+                        | Some (_, boundType, _) ->
+                            (boundType, RefType (TypeVal IntType)) :: constraintList
                         | None -> 
-                            raise (AssignNotDefinedVariableException varName)
+                            raise (ReassignNotDefinedReferenceException varName)
                     | ReadLine (varName, _) ->
                         let oldContext = if typeContext.ContainsKey varName then Some (typeContext.[varName]) else None
                         match oldContext with
-                        | Some (_, _, false) ->
-                            raise (AssignToFunArgumentIdException varName)
-                        | Some (_, boundType, true) ->
-                            (boundType, TypeVal StringType) :: constraintList
+                        | Some (_, boundType, _) ->
+                            (boundType, RefType (TypeVal StringType)) :: constraintList
                         | None -> 
-                            raise (AssignNotDefinedVariableException varName)
+                            raise (ReassignNotDefinedReferenceException varName)
                 (exprValueType, TypeVal UnitType) :: newConstraints
 
             | IfStatement (condition, trueBlock, elifList, elseBlock) ->
@@ -470,6 +477,16 @@ let checkProgram (prog : program) =
 
             let funType, newConstraints = foldGetFTypeAndConstraints appR
             getConstraintsFromExpr newConstraints funType appL
+
+        | Reference expr ->
+            let inType = ConnectionTypeVariable (nextVariableNumId ())
+            let newConstraints = getConstraintsFromExpr constraintList inType expr
+            (exprValueType, RefType (inType)) :: newConstraints
+            
+        | Unref expr ->  
+            let outType = ConnectionTypeVariable (nextVariableNumId ())
+            let newConstraints = getConstraintsFromExpr constraintList outType expr
+            (RefType (exprValueType), outType) :: newConstraints
 
         | NumVal _ ->
             (exprValueType, TypeVal IntType) :: constraintList

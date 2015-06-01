@@ -1,0 +1,4 @@
+program references
+
+let x = ref 1;
+write !x

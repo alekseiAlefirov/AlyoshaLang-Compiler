@@ -811,7 +811,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 //| ReadLine of varId
                 | _ -> raise (NotSupportedYet "CodeGenerator")
             //| LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
-            | Assignment ass ->
+            (*| Assignment ass ->
                 match ass with
                 | UsualAssignment ((_, tableId), expression) ->
                     printExpr expression
@@ -834,7 +834,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "mov [ecx + 4], eax"
                     printRetUnit()
                 //| ReadLine of varId
-                | _ -> raise (NotSupportedYet "CodeGenerator")
+                | _ -> raise (NotSupportedYet "CodeGenerator")*)
             //| IfStatement of (expression * block * ((expression * block) list) * (block option))
             | WhileStatement (expr, (Block blk)) ->
                 let conditionLabel = sprintf "_while_%d_cond" !whileCounter
