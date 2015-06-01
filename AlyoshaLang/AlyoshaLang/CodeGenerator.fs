@@ -76,7 +76,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         let writeProcName = "_writeProc"
         let readNumProcName = "_readNumProc"
         let isAssignedByte = int (256.0 ** 7.0)
-        //let isRetByte = int (256.0 ** 6.0)
+        let ifCounter = ref 0
+        let whileCounter = ref 0
         let currentScope = ref 0
         let currentScopePtrEbpOffset = 12
         let scopeSize n =
@@ -810,9 +811,43 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 //| ReadLine of varId
                 | _ -> raise (NotSupportedYet "CodeGenerator")
             //| LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
-            //| Assignment of assignment
+            | Assignment ass ->
+                match ass with
+                | UsualAssignment ((_, tableId), expression) ->
+                    printExpr expression
+
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _assignObj"
+                    //eax and ebx are occupied
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "mov [ecx], eax"
+                    printIntendln "mov [ecx + 4], ebx"
+                    printRetUnit()
+                | ReadNum (_, tableId) ->
+                    printIntendln "call %s" readNumProcName
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" (parameterOffsetInScope !currentScope !tableId)
+                    printIntendln "mov ebx, %d" (typeId IntType)
+                    printIntendln "mov [ecx], ebx"
+                    printIntendln "mov [ecx + 4], eax"
+                    printRetUnit()
+                //| ReadLine of varId
+                | _ -> raise (NotSupportedYet "CodeGenerator")
             //| IfStatement of (expression * block * ((expression * block) list) * (block option))
-            //| WhileStatement of expression * block
+            | WhileStatement (expr, (Block blk)) ->
+                let conditionLabel = sprintf "_while_%d_cond" !whileCounter
+                let bodyLabel = sprintf "_while_%d_body" !whileCounter
+                printIntendln "jmp %s" conditionLabel
+                printIntendln "%s:" bodyLabel
+                printBlock blk
+                printIntendln "%s:" conditionLabel
+                printExpr expr
+                printIntendln "cmp ebx, 1"
+                printIntendln "je %s" bodyLabel
+                printRetUnit()                
+                incr whileCounter
             | WriteStatement expr ->
                 printExpr expr
                 printPushValueFromRegs()
