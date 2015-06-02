@@ -26,16 +26,22 @@ let parseFromString code =
 [<EntryPoint>]
 let main argv = 
     try
-        let ast = parseFromFile @"..\..\..\CodeSamples\let poly.txt"
+        let ast = parseFromFile argv.[0]
         let table = checkProgram ast
         let scopes, stringConstantsDict = GetScopes ast table
         let asmCode = GenerateCode ast table scopes stringConstantsDict
-    
-        use out = new System.IO.StreamWriter(@"c:\temp\asm\pp.asm")
+        
+        let programName = 
+            match ast with Program (x, _, _) -> x
+        use out = new System.IO.StreamWriter(sprintf "%s.asm" programName)
         out.WriteLine(asmCode)
         out.Close()
+        use buildFile = new System.IO.StreamWriter(sprintf "%s_build.bat" programName)
+        buildFile.WriteLine(sprintf @"c:\masm32\bin\ml /c /coff %s.asm" programName)
+        buildFile.WriteLine(sprintf @"c:\masm32\bin\link /SUBSYSTEM:CONSOLE /LIBPATH:c:\masm32\lib %s.obj" programName)
+        buildFile.Close()
     with
     | Typer.UnifyException -> System.Console.WriteLine("AlyoshaLang-Compiler: type inference error")
     //| System.ArgumentException  -> ""
-    |  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax error")
+    |  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
     0 // return an integer exit code
