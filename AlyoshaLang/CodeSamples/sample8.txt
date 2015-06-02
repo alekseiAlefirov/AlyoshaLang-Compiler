@@ -1,3 +1,0 @@
-program remainder
-
-write 17 % 5

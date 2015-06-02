@@ -1,3 +1,0 @@
-program sum
-
-write 1 + 4 - 7

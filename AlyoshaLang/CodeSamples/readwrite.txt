@@ -1,0 +1,12 @@
+program readwrite
+
+write "write number ";
+let readnum x;
+write "write string ";
+let readline y;
+let z = ref y;
+write "write string ";
+readline z;
+write x;
+write y;
+write !z

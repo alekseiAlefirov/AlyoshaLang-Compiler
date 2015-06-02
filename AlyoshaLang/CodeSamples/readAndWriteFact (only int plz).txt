@@ -1,0 +1,10 @@
+program readfact
+
+write "enter a number to fact, plz ";
+let readnum x;
+
+let rec fact x =
+	if x <= 0 then 1 fi
+	else x * (fact (x - 1)) fi;
+
+write fact x

@@ -1,0 +1,6 @@
+program letPoly
+
+let f = fun x -> x;
+write f true;
+write f 33;
+write f f

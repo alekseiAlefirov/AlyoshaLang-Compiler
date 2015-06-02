@@ -79,6 +79,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         
         let writeProcName = "_writeProc"
         let readNumProcName = "_readNumProc"
+        let readLineProcName = "_readLineProc"
         let isAssignedByte = int (256.0 ** 7.0)
         let ifCounter = ref 0
         let whileCounter = ref 0
@@ -145,9 +146,6 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "invoke GetStdHandle, STD_INPUT_HANDLE"
             printIntendln "mov [ebp - 4], eax"
             printIntendln ""
-            //printIntendln "invoke GetProcessHeap"
-            //printIntendln "mov heapHandle, eax"
-            printIntendln ""
             printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, 10"
             printIntendln "mov [ebp - 8], eax"
             printIntendln ""
@@ -168,7 +166,43 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "ret"
 
         
-        //TODO: let printReadLineCode() =
+        let printReadLineProcCode() =
+            println "%s:" readLineProcName
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 16 ; input, stringbuffer, actual length, res"
+            printIntendln ""
+            printIntendln "invoke GetStdHandle, STD_INPUT_HANDLE"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln ""
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, 255"
+            printIntendln "mov [ebp - 8], eax"
+            printIntendln ""
+            printIntendln "mov ebx, ebp"
+            printIntendln "sub ebx, 12"
+            printIntendln "invoke ReadConsole, [ebp - 4], [ebp - 8], 255, ebx, NULL"
+            
+            printIntendln "mov ebx, ebp; delete last two symbols"
+            printIntendln "sub ebx, 12"
+            printIntendln "mov eax, [ebx]"
+            printIntendln "sub eax, 2"
+            printIntendln "mov [ebx], eax"
+
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, [ebp - 12]"
+            printIntendln "mov [ebp - 16], eax"
+            printIntendln "mov ecx, [ebp - 12]"
+            printIntendln "mov esi, [ebp - 8]"
+            printIntendln "mov edi, [ebp - 16]"
+            println "rep movsb"
+            printIntendln "invoke HeapFree, heapHandle, 0, [ebp - 8]"
+            printIntendln "mov eax, [ebp - 12]"
+            printIntendln "shl eax, 8"
+            printIntendln "mov al, %d" (typeId StringType)
+            printIntendln "mov ebx, [ebp - 16]"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
             
         let printWriteProcCode() =
             let printLengthOfNumber() = 
@@ -1264,8 +1298,17 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "mov [ecx], ebx"
                     printIntendln "mov [ecx + 4], eax"
                     printRetUnit()
-                (*| ReadLine (_, tableId) ->
-                    printIntendln "call "*)
+                | ReadLine (_, tableId) ->
+                    printIntendln "call %s" readLineProcName
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
+                    printIntendln "mov [ecx], eax"
+                    printIntendln "mov [ecx + 4], ebx"
+                    printRetUnit()
                 | _ -> raise (NotSupportedYet "CodeGenerator")
             | LetRecursiveAssignment asss ->
                 printIntendln ";big code of corecusive funs"
@@ -1324,6 +1367,32 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "call _deleteObj"
                     printIntendln "add esp, 8"
 
+                    printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
+                    
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _makeARef"
+                    printIntendln "add esp, 8"
+
+                    //eax and ebx are occupied
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" pois
+                    printIntendln "mov [ecx], eax"
+                    printIntendln "mov [ecx + 4], ebx"
+                    printRetUnit()
+                | ReadNum (_, tableId) ->
+                    printIntendln "call %s" readNumProcName
+                    printIntendln "push %d" (typeId IntType)
+                    printIntendln "push eax"
+                    printIntendln ""
+                    let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" pois
+                    printIntendln "push [ecx]"
+                    printIntendln "push [ecx + 4]"
+                    printIntendln "call _deleteObj"
+                    printIntendln "add esp, 8"
 
                     printIntendln "call _assignObj"
                     printIntendln "add esp, 8"
@@ -1333,23 +1402,40 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "call _makeARef"
                     printIntendln "add esp, 8"
 
-                    printIntendln "add eax, %d" isAssignedByte
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" pois
                     printIntendln "mov [ecx], eax"
                     printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
-                | ReadNum (_, tableId) ->
-                    printIntendln "call %s" readNumProcName
+                | ReadLine (_, tableId) ->
+                    printIntendln "call %s" readLineProcName
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln ""
+                    let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
-                    printIntendln "mov ebx, %d" (typeId IntType)
-                    printIntendln "mov [ecx], ebx"
-                    printIntendln "mov [ecx + 4], eax"
+                    printIntendln "add ecx, %d" pois
+                    printIntendln "push [ecx]"
+                    printIntendln "push [ecx + 4]"
+                    printIntendln "call _deleteObj"
+                    printIntendln "add esp, 8"
+
+                    printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
+                    
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
+                    printIntendln "call _makeARef"
+                    printIntendln "add esp, 8"
+
+                    //eax and ebx are occupied
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" pois
+                    printIntendln "mov [ecx], eax"
+                    printIntendln "mov [ecx + 4], ebx"
                     printRetUnit()
-                //| ReadLine of varId
-                | _ -> raise (NotSupportedYet "CodeGenerator")
+                    
             | IfStatement (condition, trueBlock, elifList, elseBlock) ->
                 let elifCounter = ref 0
                 printExpr condition
@@ -1801,6 +1887,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         println(" .code")
         println ""
         printReadNumProcCode()
+        printReadLineProcCode()
         printWriteProcCode()
         printCopyObjCode()
         printCopyFunctionCode()

@@ -289,7 +289,7 @@ let checkProgram (prog : program) =
                         match newFunTypeVariables with
                             | funType :: nextFunTypeVariable ->
                                 let abstrBody = Abstraction (args, funBody, ref -1)
-                                let newConstraints = getConstraintsFromExpr constraintList funType abstrBody
+                                let newConstraints = getConstraintsFromExpr constraints funType abstrBody
                                 let trueFunType = funName, (!funTableId, getTypeOfExpr abstrBody, true)
                                 let resConstraints, nextTrueFunTypes = processTheirAbstractions newConstraints nextFunTypeVariable asss
                                 resConstraints, trueFunType :: nextTrueFunTypes
@@ -557,7 +557,9 @@ let checkProgram (prog : program) =
         
     let substitution = 
         match prog with
-        | Program (_, _, blk) -> getConstraintsFromBlock [] (TypeVal UnitType) (unboxBlock blk) |> unifyConstraintList nextVariableNumId
+        | Program (_, _, blk) -> 
+            getConstraintsFromBlock [] (TypeVal UnitType) (unboxBlock blk) 
+            |> unifyConstraintList nextVariableNumId
 
     for varInfo in TableOfSymbols do
         match varInfo.Type with

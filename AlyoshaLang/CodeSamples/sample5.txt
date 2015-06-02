@@ -1,3 +1,0 @@
-program hw
-
-write "Hello, World!"

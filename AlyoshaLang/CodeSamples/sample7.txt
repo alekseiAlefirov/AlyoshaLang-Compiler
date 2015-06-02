@@ -1,3 +1,0 @@
-program multi
-
-write 5*7/11

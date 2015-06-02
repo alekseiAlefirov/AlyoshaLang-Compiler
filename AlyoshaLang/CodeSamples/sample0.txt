@@ -1,4 +1,0 @@
-﻿program p
-
-let x = 55;
-write x

@@ -1,3 +1,0 @@
-program Write1
-
-write 1

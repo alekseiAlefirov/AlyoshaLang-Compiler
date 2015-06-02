@@ -1,0 +1,16 @@
+program mutualRec
+
+let rec f x =  
+	{
+		write "f ";
+		if x < 5 then g (x + 1) fi
+		else () fi
+	}
+and g x = 
+	{
+		write "g ";
+		if x < 5 then f (x + 1) fi
+		else () fi
+	};
+f 0
+		

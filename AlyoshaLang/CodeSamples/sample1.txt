@@ -1,4 +1,0 @@
-program ReadNumberWriteItDown
-
-let readnum x;
-write x
