@@ -19,7 +19,7 @@ type StringConstantsDictionary (stringConstants : string []) =
 
     member this.Length = constants.Length
     member this.getString n = constants.[n]
-    member this.getIndex s = dict.[s] 
+    member this.getIndex s = dict.[s]
 
 let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
     let res = new ResizeArray<Scope>()
@@ -28,9 +28,11 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
     let mainScopeBlock = match ast with Program (_, _, x)-> x
     let stringConstants = new ResizeArray<string>()
     
-    let rec makeScope naturalParameters (parentScope : int) (ownName : int) (corecursiveFuns : Set<int>) (body : expression) =
+    let rec makeScope naturalParameters (parentScope : int) (ownName : int) (corecursiveFunsArr : int []) (body : expression) =
         incr scopeNumber
         incr depthCounter
+        let corecursiveFunDict = new CorecursiveFunDictionary(corecursiveFunsArr)
+
         let itsNumber = !scopeNumber
         res.Add null
         let usedVariables = new ResizeArray<(int * variableIdScopeRelationType)>()
@@ -54,7 +56,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             if (!usedVariablesSet).Contains tableId |> not then
                 //if it was inner parameter, it would be there
                 //so it can be own name, co-recursive fun or external parameter
-                if tableId = ownName || corecursiveFuns.Contains tableId then ()
+                if tableId = ownName || corecursiveFunDict.ContainsCorecursiveName tableId then ()
                 else 
                     usedVariables.Add(tableId, ExternalParameter)
                 usedVariablesSet := Set.add tableId !usedVariablesSet
@@ -80,13 +82,13 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
                         let at, bt, ct, dt = unzip4 t
                         (a::at, b::bt, c::ct, d::dt)
                     let corecursiveIds, _, _, _ = unzip4 asss
-                    let corecursiveIdSet = corecursiveIds |> List.map (fun (x, y) -> !y) |> Set.ofList
+                    let corecursiveIdArr = corecursiveIds |> List.map (fun (x, y) -> !y) |> Array.ofList
                     corecursiveIds |> List.iter
                         (fun (_, x) -> processInnerVariable !x)
                     for ((_, tableId), args, valueExpr, scopeId) in asss do
                         let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
                         scopeId := !scopeNumber + 1
-                        let newUsedVariables = makeScope  newNaturalParameters itsNumber !tableId (Set.remove !tableId corecursiveIdSet) valueExpr
+                        let newUsedVariables = makeScope  newNaturalParameters itsNumber !tableId corecursiveIdArr valueExpr
                         Set.iter processVariableId newUsedVariables
                     
                 | Reassignment ass ->
@@ -141,7 +143,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             | Abstraction (args, value, scopeId) -> 
                 let newNaturalParameters = args |> List.map (fun (x,y) -> !y)
                 scopeId := !scopeNumber + 1
-                let newUsedVariables = makeScope newNaturalParameters itsNumber -1 Set.empty value
+                let newUsedVariables = makeScope newNaturalParameters itsNumber -1 [||] value
                 Set.iter processVariableId newUsedVariables
             | Application (appF, args) ->
                 processStatement appF
@@ -159,11 +161,11 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
 
         processStatement body
 
-        let resScope = new Scope(itsNumber, body, !depthCounter, parentScope, ownName, corecursiveFuns, List.ofSeq usedVariables)
+        let resScope = new Scope(itsNumber, body, !depthCounter, parentScope, ownName, corecursiveFunDict, List.ofSeq usedVariables)
         res.[itsNumber] <- resScope
         decr depthCounter
         !usedVariablesSet |> Set.filter (fun x -> tableOfSymbols.[x].ScopeInfo < itsNumber)
     
-    makeScope [] -1 -1 Set.empty (SequenceExpression mainScopeBlock) |> ignore
+    makeScope [] -1 -1 [||] (SequenceExpression mainScopeBlock) |> ignore
     res.ToArray() , (new StringConstantsDictionary(stringConstants.ToArray()))
     

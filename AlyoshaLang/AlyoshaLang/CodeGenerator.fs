@@ -66,7 +66,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 println "%s_stringConstant_%d db '%s'" programName i (stringConstants.getString i)
         println(" .const")
         //TODO: print typeIds
-        printIntendln "sConsoleTitle db '%s'" programName
+        printIntendln "sConsoleTitle db '%s',0" programName
         printStringConstants()
         println "unitStringConstant db '()'"
         println "falseStringConstant db 'false'"
@@ -100,7 +100,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         let scopeRecursiveBlockNumPtrOffset = 3 * 4 
         let scopeSelfPtrOffset = 4 * 4
         let scopeNumOfNatParamsOffset = 5 * 4
-        let scopeNumOfExtParamsOffset n = (7 + scopes.[n].NaturalParameters.Length )*4
+        let scopeNumOfExtParamsOffset n = (7 + scopes.[n].NaturalParameters.Length * 2)*4
 
         let naturalParameterOffsetInScope n m =
             7 + m*2
@@ -145,8 +145,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "invoke GetStdHandle, STD_INPUT_HANDLE"
             printIntendln "mov [ebp - 4], eax"
             printIntendln ""
-            printIntendln "invoke GetProcessHeap"
-            printIntendln "mov heapHandle, eax"
+            //printIntendln "invoke GetProcessHeap"
+            //printIntendln "mov heapHandle, eax"
             printIntendln ""
             printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, 10"
             printIntendln "mov [ebp - 8], eax"
@@ -216,8 +216,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 printIntendln "mov ebx, 0"
                 printIntendln "mov [ebp - 8], ebx  ;initialize string length"
 
-                printIntendln "invoke GetProcessHeap"
-                printIntendln "mov heapHandle, eax"
+                //printIntendln "invoke GetProcessHeap"
+                //printIntendln "mov heapHandle, eax"
 
                 printIntendln "push [ebp + 8]"
                 printIntendln "call _getLengthOfNumber"
@@ -1183,14 +1183,17 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             
             let theScope = scopes.[n]
 
-            printIntendln "invoke GetProcessHeap"
-            printIntendln "mov heapHandle, eax"
+            //printIntendln "invoke GetProcessHeap"
+            //printIntendln "mov heapHandle, eax"
             printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, %d" ((scopeSize n)*4)
             //write self size and self pointer
             printIntendln "mov ebx, %d" ((scopeSize n)*4)
             printIntendln "mov [eax], ebx"
             printIntendln "mov ebx, %d" n
             printIntendln "mov [eax + %d], ebx; putCodeId" scopeCodeIdOffset
+            if theScope.CorecursiveFunDictionary.Length > 0 then
+                printIntendln "mov ebx, %d" (theScope.OwnName |> theScope.CorecursiveFunDictionary.getIndexInBlock)
+                printIntendln "mov [eax + %d], ebx;put num in the recfunblock" scopeRecursiveBlockNumPtrOffset 
             printIntendln "mov [eax + %d], eax ;put ptr to created scope in its field" scopeSelfPtrOffset
 
             printIntendln "mov ebx, %d" (theScope.NaturalParameters.Length)
@@ -1263,7 +1266,46 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printRetUnit()
                 //| ReadLine of varId
                 | _ -> raise (NotSupportedYet "CodeGenerator")
-            //| LetRecursiveAssignment of (varId * (varId list) * expression * (int ref)) list //int ref is for the scope information
+            | LetRecursiveAssignment asss ->
+                printIntendln ";big code of corecusive funs"
+                let rec f = function
+                | [] -> ()
+                | ((_, tableId), args, valueExpr, scopeId) :: t ->
+                    let corecursiveFuns = scopes.[!scopeId].CorecursiveFunDictionary
+                    let corecursiveBlockSize = corecursiveFuns.Length * 4 
+                    printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, %d" (corecursiveBlockSize + 4) // 4 is for size field
+                    printIntendln "push eax"
+                    printIntendln "mov ebx, %d ; put size of block" corecursiveFuns.Length
+                    printIntendln "mov [eax], ebx"
+                        
+                    let rec g = function
+                    | [] -> ()
+                    | ((_, tableIdX), args, valueExpr, scopeId) :: t ->
+                        printCreateScope !scopeId
+                        printIntendln "mov ebx, eax"
+                        printIntendln "mov eax, %d" (typeId FunType)
+                        printIntendln "mov ecx, ebx ; make ref to recblock"
+                        printIntendln "add ecx, %d" scopeRecursiveBlockPtrOffset
+                        printIntendln "mov edx, [esp]"
+                        printIntendln "mov [ecx], edx"
+                        printIntendln "add edx, %d" (((corecursiveFuns.getIndexInBlock !tableIdX) + 1) * 4)
+                        printIntendln "mov [edx], ebx ; set ptr from block to fun"
+                        if(!tableIdX = !tableId) then
+                            printIntendln "push eax"
+                            printIntendln "push ebx"
+                            printIntendln "call _addNewObj"
+                            printIntendln "call _assignObj"
+                            printIntendln "add esp, 8"
+                            printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                            printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
+                            printIntendln "mov [ecx], eax"
+                            printIntendln "mov [ecx + 4], ebx"
+                        g t
+                    g asss
+                    printIntendln "pop eax"                      
+                    f t
+                f asss
+                printRetUnit()
             | Reassignment ass ->
                 match ass with
                 | UsualAssignment ((_, tableId), expression) ->
@@ -1527,10 +1569,19 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         | SequenceExpression (Block blk) ->
             printBlock blk
         | ExprId (_, tableId) ->
-            printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset
-            printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
-            printIntendln "mov eax, [ecx]"
-            printIntendln "mov ebx, [ecx + 4]"
+            if (scopes.[!currentScope].CorecursiveFunDictionary.ContainsCorecursiveName !tableId) then
+                printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset
+                printIntendln "add ecx, %d" (scopeRecursiveBlockPtrOffset)
+                printIntendln "mov ecx, [ecx];corecursive funs block"
+                printIntendln "add ecx, %d" ((scopes.[!currentScope].CorecursiveFunDictionary.getIndexInBlock !tableId) * 4 + 4)
+                printIntendln "mov eax, %d" (typeId FunType)
+                printIntendln "add eax, %d" isAssignedByte
+                printIntendln "mov ebx, [ecx]"
+            else
+                printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset
+                printIntendln "add ecx, %d" ((parameterOffsetInScope !currentScope !tableId) * 4)
+                printIntendln "mov eax, [ecx]"
+                printIntendln "mov ebx, [ecx + 4]"
             
         | Abstraction (varIds, expression, scopeId) ->
             printCreateScope !scopeId
@@ -1590,7 +1641,6 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         | UnitVal ->
             printIntendln "mov eax, %d" (typeId UnitType)
             printIntendln "mov ebx, 0"
-        | _ -> raise (NotSupportedYet "CodeGenerator")
 
         let printApplicateFunCode() =
             println "_applicateFun:"

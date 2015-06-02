@@ -10,13 +10,25 @@ type variableIdScopeRelationType =
     | InnerVariable
     | OwnName
 
+type CorecursiveFunDictionary (corecursiveFunsArr : int []) =
+    
+    let corecursiveFunsArr = corecursiveFunsArr
+    let dict = 
+        let res = new Dictionary<int, int>()
+        for i = 0 to corecursiveFunsArr.Length - 1 do
+            res.[corecursiveFunsArr.[i]] <- i
+        res
+    member this.Length = corecursiveFunsArr.Length
+    member this.getIndexInBlock n = dict.[n]
+    member this.ContainsCorecursiveName n = dict.ContainsKey n
+
 [<AllowNullLiteralAttribute>]
 type Scope(id : int, 
             bodyAst : expression,
             depth : int,
             parentScope : int,
             ownName : int, //for scopes of recursive funs
-            corecursiveFuns : Set<int>,
+            corecursiveFunDictionary : CorecursiveFunDictionary,
             usedVariables : (int * variableIdScopeRelationType) list) =
     
     let externalParameters, naturalParametersNotSorted, innerVariables =
@@ -55,6 +67,8 @@ type Scope(id : int,
     member this.NaturalParameters = naturalParameters
     member this.InnerVariables = innerVariables
     member this.InScopeVarTable = inScopeVarTable
+    member this.OwnName = ownName
+    member this.CorecursiveFunDictionary = corecursiveFunDictionary
 
 //№ of Scope-owner for unique variable
 //Saved in Table of Symbols
