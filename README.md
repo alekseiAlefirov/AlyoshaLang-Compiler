@@ -13,4 +13,4 @@ So, for succesive using your programs, you need to
  - Install MASM32 on C:\
  (http://www.masm32.com/masmdl.htm)
  
- See some code samples in CodeExamples folder!
+ See some code samples in CodeSamples folder!
