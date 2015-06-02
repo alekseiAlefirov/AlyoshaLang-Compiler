@@ -1,0 +1,8 @@
+program upwardsFunarg
+
+let f = fun () ->
+	{
+		let g = fun x -> x * x;
+		g
+	};
+write (f ()) 5

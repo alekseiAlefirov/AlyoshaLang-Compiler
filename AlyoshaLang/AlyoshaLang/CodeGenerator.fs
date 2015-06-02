@@ -1264,7 +1264,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "mov [ecx], ebx"
                     printIntendln "mov [ecx + 4], eax"
                     printRetUnit()
-                //| ReadLine of varId
+                (*| ReadLine (_, tableId) ->
+                    printIntendln "call "*)
                 | _ -> raise (NotSupportedYet "CodeGenerator")
             | LetRecursiveAssignment asss ->
                 printIntendln ";big code of corecusive funs"
@@ -1596,7 +1597,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         | Application (funExpression, argExprs) ->
             let argsCounter = ref 0
             let rec f = function
-            | [] -> ()
+            | [] 
+            | [UnitVal] -> ()
             | a :: t ->
                 f t
                 printExpr a
