@@ -1,0 +1,6 @@
+program partialApplication
+
+let f = fun x y ->
+	x + y;
+let g = f 2;
+write g 3

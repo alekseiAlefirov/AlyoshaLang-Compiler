@@ -40,6 +40,7 @@ let GetScopes (ast : program) (tableOfSymbols : varIdInformation []) =
             | np :: nps -> 
             tableOfSymbols.[np].ScopeInfo <- itsNumber
             usedVariables.Add (np, NaturalParameter)
+            processNaturalParameters nps
         processNaturalParameters naturalParameters
 
         let usedVariablesSet =  ref (Set.ofList naturalParameters)

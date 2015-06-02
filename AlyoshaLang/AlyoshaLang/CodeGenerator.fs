@@ -66,6 +66,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 println "%s_stringConstant_%d db '%s'" programName i (stringConstants.getString i)
         println(" .const")
         //TODO: print typeIds
+        printIntendln "sConsoleTitle db '%s'" programName
         printStringConstants()
         println "unitStringConstant db '()'"
         println "falseStringConstant db 'false'"
@@ -577,7 +578,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov edx, [esi]"
             printIntendln "mov [edi], edx"
             printIntendln "imul eax, 8"
-            printIntendln "add eax, 8" //partially allocated nat params
+            printIntendln "add eax, 4" //partially allocated nat params
             printIntendln "add esi, eax" 
             printIntendln "add edi, eax"
             
@@ -665,6 +666,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "pop edi"
             printIntendln "pop esi"
             printIntendln "pop edx"
+            printIntendln "mov [edi], eax"
             printIntendln "sub edx, 1"
             printIntendln "jmp _copyFunctionsInRecblock"
 
@@ -1187,6 +1189,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             //write self size and self pointer
             printIntendln "mov ebx, %d" ((scopeSize n)*4)
             printIntendln "mov [eax], ebx"
+            printIntendln "mov ebx, %d" n
+            printIntendln "mov [eax + %d], ebx; putCodeId" scopeCodeIdOffset
             printIntendln "mov [eax + %d], eax ;put ptr to created scope in its field" scopeSelfPtrOffset
 
             printIntendln "mov ebx, %d" (theScope.NaturalParameters.Length)
@@ -1597,7 +1601,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln ";insert params in the scope obj"
             printIntendln "mov ebx, [ebp + 12]"
             printIntendln "add ebx, %d; ptr to num nat params in scopeObj" scopeNumOfNatParamsOffset
-            printIntendln "mov ecx, eax"
+            printIntendln "mov ecx, [ebx]"
             printIntendln "imul ecx, 8"
             printIntendln "add ebx, ecx; ptr to nat params in scopeObj"
             printIntendln "mov ecx, ebp; ptr to real params"
@@ -1647,7 +1651,6 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push eax"
             printIntendln "push ebx"
             printIntendln "call _addNewObj"
-            printIntendln "add esp, 8"
 
             printIntendln ";return old fun obj nat params counts"
             printIntendln "mov eax, [ebp + 12]"
@@ -1659,6 +1662,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov ebx, [eax]"
             printIntendln "sub ebx, [ebp + 8]"
             printIntendln "mov [eax], ebx"
+            printIntendln "pop ebx"
+            printIntendln "pop eax"
            
             printIntendln "_applicateFunFinish:"
             printIntendln "mov esp, ebp ; restore esp"
@@ -1727,6 +1732,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             println "%s %s" programName "PROC"
             printIntendln "push ebp		;save old ebp value"
             printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "invoke SetConsoleTitle, offset sConsoleTitle"
             printInitializeHeapObjHandle()
             printCreateScope !currentScope
             printIntendln "sub esp, 8 ;space for result"
