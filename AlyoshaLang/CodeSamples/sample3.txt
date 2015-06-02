@@ -1,5 +1,5 @@
 program useFun
 
-let readnum x;
+let x = 1;
 let f = fun x -> x;
 write f x

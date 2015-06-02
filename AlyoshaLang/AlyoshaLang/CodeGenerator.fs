@@ -86,25 +86,29 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         let scopeSize n =
             let theScope = scopes.[n]
             1 //selfsize
-            + 4       //codeId, mutually recursive funs block ptr, self pointer
+            + 4       //codeId, mutually recursive funs block ptr, rec block num, self pointer
             + 1     //№ of natural parameters
+            + 1 //№ of partial applicated natural parameters
             + theScope.NaturalParameters.Length * 2
             + 1     //№ of external parameters
             + theScope.ExternalParameters.Length * 2
             + theScope.InnerVariables.Length * 2
         
+        let scopeCodeIdOffset = 1 * 4
+        let scopeRecursiveBlockPtrOffset = 2 * 4
+        let scopeRecursiveBlockNumPtrOffset = 3 * 4 
         let scopeSelfPtrOffset = 4 * 4
         let scopeNumOfNatParamsOffset = 5 * 4
-        let scopeNumOfExtParamsOffset n = (6 * 4) + (scopes.[n].NaturalParameters.Length * 4)
+        let scopeNumOfExtParamsOffset n = (7 + scopes.[n].NaturalParameters.Length )*4
 
         let naturalParameterOffsetInScope n m =
-            6 + m*2
+            7 + m*2
 
         let externalParameterOffsetInScope n m =
-            6 + (scopes.[n].NaturalParameters.Length)*2 + 1 + m*2
+            7 + (scopes.[n].NaturalParameters.Length)*2 + 1 + m*2
 
         let innerVariableOffsetInScope n m =
-            6 + (scopes.[n].NaturalParameters.Length)*2 + 1 + (scopes.[n].ExternalParameters.Length)*2 + m*2
+            7 + (scopes.[n].NaturalParameters.Length)*2 + 1 + (scopes.[n].ExternalParameters.Length)*2 + m*2
 
         // m for tableId
         let parameterOffsetInScope n m =
@@ -432,6 +436,12 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push ebp		;save old ebp value"
             printIntendln "mov ebp, esp	;save pointer to this frame value"
             printIntendln "sub esp, 8; ptr to last objRecord + new obj"
+
+            printIntendln ";check it is ptr type"
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "mov ebx, [ebp + 8]"
+            printIntendln "cmp al, %d" (typeId StringType)
+            printIntendln "jl _addNewObjFinish"
             
             printIntendln "mov ebx, heapObjHandle"
             printIntendln "mov ebx, [ebx]"
@@ -455,6 +465,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov ebx, _currentDepth"
             printIntendln "mov [eax + 12], ebx"
 
+            printIntendln "_addNewObjFinish:"
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
             printIntendln "ret"
@@ -477,7 +488,27 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "_copyIfFun:"
             printIntendln "cmp bl, %d" (typeId FunType)
             printIntendln "jne _copyIfString"
-            printIntendln ";TODO fun copy"
+            printIntendln "mov eax, [ebp - 8]"
+            printIntendln "mov eax, [eax + %d]; check if this fun is recursive" scopeRecursiveBlockPtrOffset
+            printIntendln "cmp eax, 0"
+            printIntendln "je _isNotRecursiveFunToCopy"
+            printIntendln "push eax"
+            printIntendln "call _copyRecFunBlock"
+            printIntendln "add esp, 4"
+            printIntendln "mov ebx, [ebp - 8]" 
+            printIntendln "add ebx, %d" scopeRecursiveBlockNumPtrOffset
+            printIntendln "mov ebx, [ebx]"
+            printIntendln "add ebx, 1 ; for recblock size field"
+            printIntendln "imul ebx, 4"
+            printIntendln "add eax, ebx"
+            printIntendln "mov [ebp - 8], eax"
+            printIntendln "jmp _endObjCopy"
+
+            printIntendln "_isNotRecursiveFunToCopy:"
+            printIntendln "push [ebp - 8]"
+            printIntendln "call _copyFunction"
+            printIntendln "add esp, 4"
+            printIntendln "mov [ebp - 8], eax"
             printIntendln "jmp _endObjCopy"
 
             printIntendln "_copyIfString:"
@@ -508,6 +539,137 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             
             printIntendln "mov eax, [ebp - 4]"
             printIntendln "mov ebx, [ebp - 8]"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        let printCopyFunctionCode() =
+            printIntendln "_copyFunction:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 4 ;new obj ptr"
+
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "mov eax, [eax]"
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, eax"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln "add eax, %d" scopeSelfPtrOffset
+            printIntendln "mov edi, [ebp - 4]"
+            printIntendln "mov [eax], edi"
+            printIntendln "mov esi, [ebp + 8]"
+            printIntendln "mov eax, [esi]"
+            printIntendln "mov [edi], eax"
+            printIntendln "add esi, 4"
+            printIntendln "add edi, 4"
+            printIntendln "mov eax, [esi]"
+            printIntendln "mov [edi], eax"
+            printIntendln "add esi, 8"//rec block num
+            printIntendln "add edi, 8"
+            printIntendln "mov eax, [esi]"
+            printIntendln "mov [edi], eax"
+            printIntendln "add esi, 8"//natural params num
+            printIntendln "add edi, 8"
+            printIntendln "mov eax, [esi]"
+            printIntendln "mov [edi], eax"
+            printIntendln "add esi, 4"//partially allocated nat params num
+            printIntendln "add edi, 4"
+            printIntendln "mov edx, [esi]"
+            printIntendln "mov [edi], edx"
+            printIntendln "imul eax, 8"
+            printIntendln "add eax, 8" //partially allocated nat params
+            printIntendln "add esi, eax" 
+            printIntendln "add edi, eax"
+            
+            printIntendln "_copyFunNatParameters:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _funNatParametersAreCopied"
+            printIntendln "push edx"
+            printIntendln "push esi"
+            printIntendln "push edi"
+            printIntendln "push [esi]"
+            printIntendln "push [esi + 4]"
+            printIntendln "call _copyObj"
+            printIntendln "add esp, 8"
+            printIntendln "pop edi"
+            printIntendln "pop esi"
+            printIntendln "pop edx"
+            printIntendln "mov [edi], eax"
+            printIntendln "mov [edi + 4], ebx"
+            printIntendln "add esi, 8"
+            printIntendln "add edi, 8"
+
+            printIntendln "sub edx, 1"
+            printIntendln "jmp _copyFunNatParameters"
+            printIntendln "_funNatParametersAreCopied:"
+
+            printIntendln "mov edx, [esi]"
+            printIntendln "mov [edi], edx"
+            printIntendln "add esi, 4"
+            printIntendln "add edi, 4"
+
+            printIntendln "_copyFunExtParameters:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _funExtParametersAreCopied"
+            printIntendln "push edx"
+            printIntendln "push esi"
+            printIntendln "push edi"
+            printIntendln "push [esi]"
+            printIntendln "push [esi + 4]"
+            printIntendln "call _copyObj"
+            printIntendln "add esp, 8"
+            printIntendln "pop edi"
+            printIntendln "pop esi"
+            printIntendln "pop edx"
+            printIntendln "mov [edi], eax"
+            printIntendln "mov [edi + 4], ebx"
+            printIntendln "add esi, 8"
+            printIntendln "add edi, 8"
+
+            printIntendln "sub edx, 1"
+            printIntendln "jmp _copyFunExtParameters"
+            printIntendln "_funExtParametersAreCopied:"
+            
+            printIntendln "mov eax, [ebp - 4]"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
+        let printCopyRecFunBlockCode() =
+            printIntendln "_copyRecFunBlock:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 4 ;new obj ptr"
+
+            printIntendln "mov esi, [ebp + 8]"
+            printIntendln "mov eax, [esi]"
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, eax"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln "mov esi, [ebp + 8]"
+            printIntendln "mov edi, [ebp - 4]"
+            printIntendln "mov edx, [esi]"
+            printIntendln "mov [edi], edx"
+
+            printIntendln "_copyFunctionsInRecblock:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _copyRecFunBlockFinish"
+            printIntendln "add esi, 4"
+            printIntendln "add edi, 4"
+            printIntendln "push edx"
+            printIntendln "push esi"
+            printIntendln "push edi"
+            printIntendln "push [esi]"
+            printIntendln "call _copyFunction"
+            printIntendln "add esp, 4"
+            printIntendln "pop edi"
+            printIntendln "pop esi"
+            printIntendln "pop edx"
+            printIntendln "sub edx, 1"
+            printIntendln "jmp _copyFunctionsInRecblock"
+
+            printIntendln "_copyRecFunBlockFinish:"
+            printIntendln "mov eax, [ebp - 4]"
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
             printIntendln "ret"
@@ -591,7 +753,20 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "_deleteIfFun:"
             printIntendln "cmp bl, %d" (typeId FunType)
             printIntendln "jne _deleteIfString"
-            printIntendln ";TODO fun deletion"
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "add eax, %d ;check if it is recursive fun" scopeRecursiveBlockPtrOffset
+            printIntendln "mov eax, [eax]"
+            printIntendln "cmp eax, 0"
+            printIntendln "je _isNotRecursiveFunToDelete"
+            printIntendln "push eax"
+            printIntendln "call _deleteRecursiveFunBlock"
+            printIntendln "add esp, 4"
+            printIntendln "jmp _endObjDeletion"
+            printIntendln "_isNotRecursiveFunToDelete:"
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "push eax"
+            printIntendln "call _deleteFunction"
+            printIntendln "add esp, 4"
             printIntendln "jmp _endObjDeletion"
 
             printIntendln "_deleteIfString:"
@@ -617,6 +792,89 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "invoke HeapFree, heapHandle, 0, eax"
 
             printIntendln "_endObjDeletion: "
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printDeleteFunctionCode() =
+            println "_deleteFunction:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "add eax, %d ;nat params num" scopeNumOfNatParamsOffset
+            printIntendln "mov ecx, [eax]"
+            printIntendln "imul ecx, 8"
+            printIntendln "add eax, 4 ;partially allocated np num"
+            printIntendln "mov edx, [eax]"
+            printIntendln "add eax, 4"
+            printIntendln "add eax, ecx"
+
+            printIntendln "_deleteNatParameters:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _natParametersAreDeleted"
+            printIntendln "push edx"
+            printIntendln "push eax"
+            printIntendln "push [eax]"
+            printIntendln "push [eax + 4]"
+            printIntendln "call _deleteObj"
+            printIntendln "add esp, 8"
+            printIntendln "pop eax"
+            printIntendln "pop edx"
+            printIntendln "sub edx, 1"
+            printIntendln "add eax, 8"
+            printIntendln "jmp _deleteNatParameters"
+
+            printIntendln "_natParametersAreDeleted:"
+            printIntendln "mov edx, [eax]"
+            printIntendln "add eax, 4"
+
+            printIntendln "_deleteExtParameters:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _deleteFunctionFinish"
+            printIntendln "push edx"
+            printIntendln "push eax"
+            printIntendln "push [eax]"
+            printIntendln "push [eax + 4]"
+            printIntendln "call _deleteObj"
+            printIntendln "add esp, 8"
+            printIntendln "pop eax"
+            printIntendln "pop edx"
+            printIntendln "sub edx, 1"
+            printIntendln "add eax, 8"
+            printIntendln "jmp _deleteExtParameters"
+
+            printIntendln "_deleteFunctionFinish:"
+            printIntendln "invoke HeapFree, heapHandle, 0, [ebp + 8]"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln ""
+            printIntendln "ret"
+
+        let printDeleteRecursiveFunBlockCode() =
+            println "_deleteRecursiveFunBlock:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "mov edx, [eax]"
+            printIntendln "add eax, 4"
+
+            printIntendln "_deleteRecursiveFunsLoop:"
+            printIntendln "cmp edx, 0"
+            printIntendln "je _deleteRecursiveBlockFinish"
+            printIntendln "push edx"
+            printIntendln "push eax"
+            printIntendln "push [eax]"
+            printIntendln "call _deleteFunction"
+            printIntendln "add esp, 4"
+            printIntendln "pop eax"
+            printIntendln "pop edx"
+
+            printIntendln "sub edx, 1"
+            printIntendln "add eax, 4"
+            printIntendln "_deleteRecursiveBlockFinish:"
+            printIntendln "invoke HeapFree, heapHandle, 0, [ebp + 8]"
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
             printIntendln ""
@@ -925,14 +1183,17 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "invoke GetProcessHeap"
             printIntendln "mov heapHandle, eax"
-            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE, %d" ((scopeSize n)*4)
+            printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, %d" ((scopeSize n)*4)
             //write self size and self pointer
-            printIntendln "mov ebx, %d" (scopeSize n)
+            printIntendln "mov ebx, %d" ((scopeSize n)*4)
             printIntendln "mov [eax], ebx"
             printIntendln "mov [eax + %d], eax ;put ptr to created scope in its field" scopeSelfPtrOffset
 
             printIntendln "mov ebx, %d" (theScope.NaturalParameters.Length)
             printIntendln "mov [eax + %d], ebx ;put number of its natural parameters" scopeNumOfNatParamsOffset
+
+            printIntendln "mov ebx, 0"
+            printIntendln "mov [eax + %d], ebx ;put number of its natural parameters" (scopeNumOfNatParamsOffset + 4)
 
             printIntendln "mov ebx, %d" (theScope.ExternalParameters.Length)
             printIntendln "mov [eax + %d], ebx ;put number of its external parameters" (scopeNumOfExtParamsOffset n)
@@ -952,8 +1213,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "pop eax" //ptr to this function
             printIntendln "sub _currentDepth, 1"
-            //TODO: simple values should not be added
             printIntendln "call _addNewObj"
+
             printIntendln "pop ebx"
             printIntendln "pop eax"
             printIntendln "mov esp, ebp ; restore esp"
@@ -1267,9 +1528,34 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov eax, [ecx]"
             printIntendln "mov ebx, [ecx + 4]"
             
-        (*| Abstraction of (varId list) * expression * (int ref) //int ref is for the scope information
-        | Application of expression * (expression list) ->
-            TODO: here parameters should be put*)
+        | Abstraction (varIds, expression, scopeId) ->
+            printCreateScope !scopeId
+            printIntendln "mov ebx, eax"
+            printIntendln "mov eax, %d" (typeId FunType)
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _addNewObj"
+            printIntendln "pop ebx"
+            printIntendln "pop eax"
+
+        | Application (funExpression, argExprs) ->
+            let argsCounter = ref 0
+            let rec f = function
+            | [] -> ()
+            | a :: t ->
+                f t
+                printExpr a
+                printIntendln "push eax"
+                printIntendln "push ebx"
+                incr argsCounter
+            f argExprs
+            printExpr funExpression
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "push %d" !argsCounter
+            printIntendln "call _applicateFun"
+            printIntendln "add esp, %d" ((1 + 2 + (!argsCounter)*2)*4)
+
         | Reference expr ->
             printExpr expr
             printIntendln "push eax"
@@ -1302,6 +1588,84 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "mov ebx, 0"
         | _ -> raise (NotSupportedYet "CodeGenerator")
 
+        let printApplicateFunCode() =
+            println "_applicateFun:"
+            printIntendln "push ebp		;save old ebp value"
+            printIntendln "mov ebp, esp	;save pointer to this frame value"
+
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln ";insert params in the scope obj"
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "add ebx, %d; ptr to num nat params in scopeObj" scopeNumOfNatParamsOffset
+            printIntendln "mov ecx, eax"
+            printIntendln "imul ecx, 8"
+            printIntendln "add ebx, ecx; ptr to nat params in scopeObj"
+            printIntendln "mov ecx, ebp; ptr to real params"
+            printIntendln "add ecx, 24"
+            printIntendln "_insertFunParams:"
+            printIntendln "cmp eax, 0"
+            printIntendln "je _checkIsFullApplicate"
+            printIntendln "mov edx, [ecx]"
+            printIntendln "mov [ebx], edx"
+            printIntendln "mov edx, [ecx - 4]"
+            printIntendln "mov [ebx + 4], edx"
+            printIntendln "sub eax, 1"
+            printIntendln "add ecx, 8"
+            printIntendln "sub ebx, 8"
+            printIntendln "jmp _insertFunParams"
+
+            printIntendln "_checkIsFullApplicate:"
+            printIntendln ";check if it is full application"
+            printIntendln "mov eax, [ebp + 8]"
+            printIntendln "mov ebx, [ebp + 12]"
+            printIntendln "mov ebx, [ebx + %d]" scopeNumOfNatParamsOffset
+            printIntendln "cmp eax, ebx"
+            printIntendln "jne _partialAllocate"
+            printIntendln "push [ebp + 12]"
+            printIntendln "call %s_abstraction_switch" programName
+            printIntendln "add esp, 4"
+            printIntendln "jmp _applicateFunFinish"
+            
+            printIntendln "_partialAllocate:"
+            printIntendln ";for copy fun right, nat params counts"
+            printIntendln ";have to be changed"
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "add eax, %d" scopeNumOfNatParamsOffset
+            printIntendln "mov ebx, [eax]"
+            printIntendln "sub ebx, [ebp + 8]"
+            printIntendln "mov [eax], ebx"
+            printIntendln "add eax, 4"
+            printIntendln "mov ebx, [eax]"
+            printIntendln "add ebx, [ebp + 8]"
+            printIntendln "mov [eax], ebx"
+
+            printIntendln "push [ebp + 16]"
+            printIntendln "push [ebp + 12]"
+            printIntendln "call _copyObj"
+            printIntendln "add esp, 8"
+
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _addNewObj"
+            printIntendln "add esp, 8"
+
+            printIntendln ";return old fun obj nat params counts"
+            printIntendln "mov eax, [ebp + 12]"
+            printIntendln "add eax, %d" scopeNumOfNatParamsOffset
+            printIntendln "mov ebx, [eax]"
+            printIntendln "add ebx, [ebp + 8]"
+            printIntendln "mov [eax], ebx"
+            printIntendln "add eax, 4"
+            printIntendln "mov ebx, [eax]"
+            printIntendln "sub ebx, [ebp + 8]"
+            printIntendln "mov [eax], ebx"
+           
+            printIntendln "_applicateFunFinish:"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "pop ebp"
+            printIntendln "ret"
+            printIntendln ""
+
         let printAbstractionSwitcher() =
             println "%s_abstraction_switch:" programName
             printIntendln "push ebp		;save old ebp value"
@@ -1309,16 +1673,20 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             for i = 1 to scopes.Length - 2 do
                 printIntendln "_switch_%d:" i
                 printIntendln "mov eax, [ebp + 8]"
+                printIntendln "mov eax, [eax + %d]" scopeCodeIdOffset
                 printIntendln "cmp eax, %d" i
                 printIntendln "jne %s%d" "_switch_" (i+1)
+                printIntendln "push [ebp + 8]"
                 printIntendln "call %s_abstraction_scope_%d" programName i
                 printIntendln "jmp _finish_abstraction_switch"
 
             if scopes.Length > 1 then
                 printIntendln "_switch_%d:" (scopes.Length - 1)
                 printIntendln "mov eax, [ebp + 8]"
+                printIntendln "mov eax, [eax + %d]" scopeCodeIdOffset
                 printIntendln "cmp eax, %d" (scopes.Length - 1)
                 printIntendln "jne %s" "_finish_abstraction_switch"
+                printIntendln "push [ebp + 8]"
                 printIntendln "call %s_abstraction_scope_%d" programName (scopes.Length - 1)
                 printIntendln "jmp _finish_abstraction_switch"
 
@@ -1335,8 +1703,10 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 printIntendln "push ebp		;save old ebp value"
                 printIntendln "mov ebp, esp	;save pointer to this frame value"
                 printIntendln "sub esp, 8 ;space for result"
-                printIntendln "mov eax, [ebp + 12]"
+                printIntendln "add _currentDepth, 1"
+                printIntendln "mov eax, [ebp + 8]"
                 printIntendln "push eax"
+                currentScope := i
                 printExpr scopes.[i].Body
                 printCleanCurrentScopeStack()
                 println "ret"
@@ -1375,9 +1745,13 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         printReadNumProcCode()
         printWriteProcCode()
         printCopyObjCode()
+        printCopyFunctionCode()
+        printCopyRecFunBlockCode()
         printAssignObjCode()
         printAddNewObjCode()
         printDeleteObjCode()
+        printDeleteFunctionCode()
+        printDeleteRecursiveFunBlockCode()
         printCleanHeapObjCurrentDepthCode()
         printIsEqualCode()
         printGreaterCode()
@@ -1387,6 +1761,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
         printStringConcat()
         printMakeARefCode()
         printUnrefCode()
+        printApplicateFunCode()
+        printAbstractionSwitcher()
+        printAbstractionBodies()
         printMain()
         printEnd()
 
