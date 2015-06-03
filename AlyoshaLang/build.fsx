@@ -20,7 +20,7 @@ Target "AlyoshaLang.exe" (fun _ ->
     objDir + "AlyoshaLexer.fs"; 
     //objDir + "AlyoshaParser.fsi";
     srcDir + "Types.fs";  
-    //srcDir + "Conversions.fs";
+    srcDir + "Conversions.fs";
     srcDir + "FunScopes.fs";
     srcDir + "VariablesInformation.fs";
     srcDir + "Typer.fs";
