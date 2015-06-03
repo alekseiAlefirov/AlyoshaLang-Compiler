@@ -43,5 +43,5 @@ let main argv =
     with
     | Typer.UnifyException -> System.Console.WriteLine("AlyoshaLang-Compiler: type inference error")
     //| System.ArgumentException  -> ""
-    |  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
+    //|  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
     0 // return an integer exit code
