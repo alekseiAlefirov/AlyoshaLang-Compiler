@@ -11,7 +11,7 @@ let lexeme lexbuf =
 let middle (str : string) =
     str.Substring(1, str.Length - 2)
 
-# 14 "obj\Debug\AlyoshaLexer.fs"
+# 14 "obj\AlyoshaLexer.fs"
 let trans : uint16[] array = 
     [| 
     (* State 0 *)
@@ -280,300 +280,300 @@ and _fslex_tokenize  _fslex_state lexbuf =
   | 0 -> ( 
 # 26 "AlyoshaLexer.fsl"
                              tokenize lexbuf
-# 283 "obj\Debug\AlyoshaLexer.fs"
+# 283 "obj\AlyoshaLexer.fs"
           )
   | 1 -> ( 
 # 27 "AlyoshaLexer.fsl"
                            tokenize lexbuf
-# 288 "obj\Debug\AlyoshaLexer.fs"
+# 288 "obj\AlyoshaLexer.fs"
           )
   | 2 -> ( 
 # 28 "AlyoshaLexer.fsl"
                          NUMVAL (Int32.Parse(lexeme lexbuf)) 
-# 293 "obj\Debug\AlyoshaLexer.fs"
+# 293 "obj\AlyoshaLexer.fs"
           )
   | 3 -> ( 
 # 29 "AlyoshaLexer.fsl"
                               STRINGVAL (middle (lexeme lexbuf)) 
-# 298 "obj\Debug\AlyoshaLexer.fs"
+# 298 "obj\AlyoshaLexer.fs"
           )
   | 4 -> ( 
 # 31 "AlyoshaLexer.fsl"
                           UNIT 
-# 303 "obj\Debug\AlyoshaLexer.fs"
+# 303 "obj\AlyoshaLexer.fs"
           )
   | 5 -> ( 
 # 32 "AlyoshaLexer.fsl"
                          ISEQUAL
-# 308 "obj\Debug\AlyoshaLexer.fs"
+# 308 "obj\AlyoshaLexer.fs"
           )
   | 6 -> ( 
 # 33 "AlyoshaLexer.fsl"
                          NOTEQUAL
-# 313 "obj\Debug\AlyoshaLexer.fs"
+# 313 "obj\AlyoshaLexer.fs"
           )
   | 7 -> ( 
 # 35 "AlyoshaLexer.fsl"
                          OR
-# 318 "obj\Debug\AlyoshaLexer.fs"
+# 318 "obj\AlyoshaLexer.fs"
           )
   | 8 -> ( 
 # 36 "AlyoshaLexer.fsl"
                          AND
-# 323 "obj\Debug\AlyoshaLexer.fs"
+# 323 "obj\AlyoshaLexer.fs"
           )
   | 9 -> ( 
 # 37 "AlyoshaLexer.fsl"
                           NOT
-# 328 "obj\Debug\AlyoshaLexer.fs"
+# 328 "obj\AlyoshaLexer.fs"
           )
   | 10 -> ( 
 # 38 "AlyoshaLexer.fsl"
                          NOTLESS
-# 333 "obj\Debug\AlyoshaLexer.fs"
+# 333 "obj\AlyoshaLexer.fs"
           )
   | 11 -> ( 
 # 39 "AlyoshaLexer.fsl"
                          NOTGREATER
-# 338 "obj\Debug\AlyoshaLexer.fs"
+# 338 "obj\AlyoshaLexer.fs"
           )
   | 12 -> ( 
 # 40 "AlyoshaLexer.fsl"
                          FUNARROW
-# 343 "obj\Debug\AlyoshaLexer.fs"
+# 343 "obj\AlyoshaLexer.fs"
           )
   | 13 -> ( 
 # 42 "AlyoshaLexer.fsl"
                           REF
-# 348 "obj\Debug\AlyoshaLexer.fs"
+# 348 "obj\AlyoshaLexer.fs"
           )
   | 14 -> ( 
 # 43 "AlyoshaLexer.fsl"
                         UNREF
-# 353 "obj\Debug\AlyoshaLexer.fs"
+# 353 "obj\AlyoshaLexer.fs"
           )
   | 15 -> ( 
 # 45 "AlyoshaLexer.fsl"
                            BOOLVAL (true) 
-# 358 "obj\Debug\AlyoshaLexer.fs"
+# 358 "obj\AlyoshaLexer.fs"
           )
   | 16 -> ( 
 # 46 "AlyoshaLexer.fsl"
                             BOOLVAL (false) 
-# 363 "obj\Debug\AlyoshaLexer.fs"
+# 363 "obj\AlyoshaLexer.fs"
           )
   | 17 -> ( 
 # 48 "AlyoshaLexer.fsl"
                          REASSIGN
-# 368 "obj\Debug\AlyoshaLexer.fs"
+# 368 "obj\AlyoshaLexer.fs"
           )
   | 18 -> ( 
 # 50 "AlyoshaLexer.fsl"
                         SEMICOLON
-# 373 "obj\Debug\AlyoshaLexer.fs"
+# 373 "obj\AlyoshaLexer.fs"
           )
   | 19 -> ( 
 # 51 "AlyoshaLexer.fsl"
                         COLON
-# 378 "obj\Debug\AlyoshaLexer.fs"
+# 378 "obj\AlyoshaLexer.fs"
           )
   | 20 -> ( 
 # 52 "AlyoshaLexer.fsl"
                         EQUAL
-# 383 "obj\Debug\AlyoshaLexer.fs"
+# 383 "obj\AlyoshaLexer.fs"
           )
   | 21 -> ( 
 # 53 "AlyoshaLexer.fsl"
                              PROGRAM
-# 388 "obj\Debug\AlyoshaLexer.fs"
+# 388 "obj\AlyoshaLexer.fs"
           )
   | 22 -> ( 
 # 54 "AlyoshaLexer.fsl"
                            UNION
-# 393 "obj\Debug\AlyoshaLexer.fs"
+# 393 "obj\AlyoshaLexer.fs"
           )
   | 23 -> ( 
 # 55 "AlyoshaLexer.fsl"
                          OF
-# 398 "obj\Debug\AlyoshaLexer.fs"
+# 398 "obj\AlyoshaLexer.fs"
           )
   | 24 -> ( 
 # 56 "AlyoshaLexer.fsl"
                           LET
-# 403 "obj\Debug\AlyoshaLexer.fs"
+# 403 "obj\AlyoshaLexer.fs"
           )
   | 25 -> ( 
 # 57 "AlyoshaLexer.fsl"
                           REC
-# 408 "obj\Debug\AlyoshaLexer.fs"
+# 408 "obj\AlyoshaLexer.fs"
           )
   | 26 -> ( 
 # 58 "AlyoshaLexer.fsl"
                           ANDREC
-# 413 "obj\Debug\AlyoshaLexer.fs"
+# 413 "obj\AlyoshaLexer.fs"
           )
   | 27 -> ( 
 # 59 "AlyoshaLexer.fsl"
                          IF
-# 418 "obj\Debug\AlyoshaLexer.fs"
+# 418 "obj\AlyoshaLexer.fs"
           )
   | 28 -> ( 
 # 60 "AlyoshaLexer.fsl"
                           THEN
-# 423 "obj\Debug\AlyoshaLexer.fs"
+# 423 "obj\AlyoshaLexer.fs"
           )
   | 29 -> ( 
 # 61 "AlyoshaLexer.fsl"
                          FI
-# 428 "obj\Debug\AlyoshaLexer.fs"
+# 428 "obj\AlyoshaLexer.fs"
           )
   | 30 -> ( 
 # 62 "AlyoshaLexer.fsl"
                           ELIF
-# 433 "obj\Debug\AlyoshaLexer.fs"
+# 433 "obj\AlyoshaLexer.fs"
           )
   | 31 -> ( 
 # 63 "AlyoshaLexer.fsl"
                           ELSE
-# 438 "obj\Debug\AlyoshaLexer.fs"
+# 438 "obj\AlyoshaLexer.fs"
           )
   | 32 -> ( 
 # 64 "AlyoshaLexer.fsl"
                            WHILE
-# 443 "obj\Debug\AlyoshaLexer.fs"
+# 443 "obj\AlyoshaLexer.fs"
           )
   | 33 -> ( 
 # 65 "AlyoshaLexer.fsl"
                          DO
-# 448 "obj\Debug\AlyoshaLexer.fs"
+# 448 "obj\AlyoshaLexer.fs"
           )
   | 34 -> ( 
 # 66 "AlyoshaLexer.fsl"
                          OD
-# 453 "obj\Debug\AlyoshaLexer.fs"
+# 453 "obj\AlyoshaLexer.fs"
           )
   | 35 -> ( 
 # 67 "AlyoshaLexer.fsl"
                              READNUM
-# 458 "obj\Debug\AlyoshaLexer.fs"
+# 458 "obj\AlyoshaLexer.fs"
           )
   | 36 -> ( 
 # 68 "AlyoshaLexer.fsl"
                              READLINE
-# 463 "obj\Debug\AlyoshaLexer.fs"
+# 463 "obj\AlyoshaLexer.fs"
           )
   | 37 -> ( 
 # 69 "AlyoshaLexer.fsl"
                            WRITE
-# 468 "obj\Debug\AlyoshaLexer.fs"
+# 468 "obj\AlyoshaLexer.fs"
           )
   | 38 -> ( 
 # 70 "AlyoshaLexer.fsl"
                           FUN
-# 473 "obj\Debug\AlyoshaLexer.fs"
+# 473 "obj\AlyoshaLexer.fs"
           )
   | 39 -> ( 
 # 71 "AlyoshaLexer.fsl"
                           NUF
-# 478 "obj\Debug\AlyoshaLexer.fs"
+# 478 "obj\AlyoshaLexer.fs"
           )
   | 40 -> ( 
 # 72 "AlyoshaLexer.fsl"
                            MATCH
-# 483 "obj\Debug\AlyoshaLexer.fs"
+# 483 "obj\AlyoshaLexer.fs"
           )
   | 41 -> ( 
 # 73 "AlyoshaLexer.fsl"
                           WITH
-# 488 "obj\Debug\AlyoshaLexer.fs"
+# 488 "obj\AlyoshaLexer.fs"
           )
   | 42 -> ( 
 # 74 "AlyoshaLexer.fsl"
                                 ENDMATCH
-# 493 "obj\Debug\AlyoshaLexer.fs"
+# 493 "obj\AlyoshaLexer.fs"
           )
   | 43 -> ( 
 # 78 "AlyoshaLexer.fsl"
                         EQUAL
-# 498 "obj\Debug\AlyoshaLexer.fs"
+# 498 "obj\AlyoshaLexer.fs"
           )
   | 44 -> ( 
 # 79 "AlyoshaLexer.fsl"
                         PIPE
-# 503 "obj\Debug\AlyoshaLexer.fs"
+# 503 "obj\AlyoshaLexer.fs"
           )
   | 45 -> ( 
 # 80 "AlyoshaLexer.fsl"
                         GREATER
-# 508 "obj\Debug\AlyoshaLexer.fs"
+# 508 "obj\AlyoshaLexer.fs"
           )
   | 46 -> ( 
 # 81 "AlyoshaLexer.fsl"
                         LESS
-# 513 "obj\Debug\AlyoshaLexer.fs"
+# 513 "obj\AlyoshaLexer.fs"
           )
   | 47 -> ( 
 # 83 "AlyoshaLexer.fsl"
                         PLUS
-# 518 "obj\Debug\AlyoshaLexer.fs"
+# 518 "obj\AlyoshaLexer.fs"
           )
   | 48 -> ( 
 # 84 "AlyoshaLexer.fsl"
                         MINUS
-# 523 "obj\Debug\AlyoshaLexer.fs"
+# 523 "obj\AlyoshaLexer.fs"
           )
   | 49 -> ( 
 # 85 "AlyoshaLexer.fsl"
                         MUL
-# 528 "obj\Debug\AlyoshaLexer.fs"
+# 528 "obj\AlyoshaLexer.fs"
           )
   | 50 -> ( 
 # 86 "AlyoshaLexer.fsl"
                         DIV
-# 533 "obj\Debug\AlyoshaLexer.fs"
+# 533 "obj\AlyoshaLexer.fs"
           )
   | 51 -> ( 
 # 87 "AlyoshaLexer.fsl"
                         MOD
-# 538 "obj\Debug\AlyoshaLexer.fs"
+# 538 "obj\AlyoshaLexer.fs"
           )
   | 52 -> ( 
 # 89 "AlyoshaLexer.fsl"
                         LPAREN
-# 543 "obj\Debug\AlyoshaLexer.fs"
+# 543 "obj\AlyoshaLexer.fs"
           )
   | 53 -> ( 
 # 90 "AlyoshaLexer.fsl"
                         RPAREN
-# 548 "obj\Debug\AlyoshaLexer.fs"
+# 548 "obj\AlyoshaLexer.fs"
           )
   | 54 -> ( 
 # 91 "AlyoshaLexer.fsl"
                         LBRACE
-# 553 "obj\Debug\AlyoshaLexer.fs"
+# 553 "obj\AlyoshaLexer.fs"
           )
   | 55 -> ( 
 # 92 "AlyoshaLexer.fsl"
                         RBRACE
-# 558 "obj\Debug\AlyoshaLexer.fs"
+# 558 "obj\AlyoshaLexer.fs"
           )
   | 56 -> ( 
 # 94 "AlyoshaLexer.fsl"
                         DOG
-# 563 "obj\Debug\AlyoshaLexer.fs"
+# 563 "obj\AlyoshaLexer.fs"
           )
   | 57 -> ( 
 # 97 "AlyoshaLexer.fsl"
                        ID (lexeme lexbuf)
-# 568 "obj\Debug\AlyoshaLexer.fs"
+# 568 "obj\AlyoshaLexer.fs"
           )
   | 58 -> ( 
 # 99 "AlyoshaLexer.fsl"
                         EOF
-# 573 "obj\Debug\AlyoshaLexer.fs"
+# 573 "obj\AlyoshaLexer.fs"
           )
   | _ -> failwith "tokenize"
 
 # 101 "AlyoshaLexer.fsl"
 
-# 3000000 "obj\Debug\AlyoshaLexer.fs"
+# 3000000 "obj\AlyoshaLexer.fs"

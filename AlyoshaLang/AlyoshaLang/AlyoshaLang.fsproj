@@ -42,8 +42,8 @@
   <Import Project="$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets" Condition=" Exists('$(MSBuildExtensionsPath32)\..\Microsoft SDKs\F#\3.0\Framework\v4.0\Microsoft.FSharp.Targets')" />
   <Import Project="$(MSBuildExtensionsPath32)\..\FSharpPowerPack-4.0.0.0\bin\FSharp.PowerPack.targets" />
   <PropertyGroup>
-    <FsLexOutputFolder>$(IntermediateOutputPath)</FsLexOutputFolder>
-    <FsYaccOutputFolder>$(IntermediateOutputPath)</FsYaccOutputFolder>
+    <FsLexOutputFolder>obj\</FsLexOutputFolder>
+    <FsYaccOutputFolder>obj\</FsYaccOutputFolder>
   </PropertyGroup>
   <ItemGroup>
     <None Include="App.config">
@@ -59,11 +59,11 @@
     <Compile Include="Types.fs" />
     <Compile Include="Conversions.fs" />
     <Compile Include="FunScopes.fs" />
-    <Compile Include="$(IntermediateOutputPath)\AlyoshaParser.fs">
+    <Compile Include="obj\AlyoshaParser.fs">
       <Visible>false</Visible>
       <Link>AlyoshaParser.fs</Link>
     </Compile>
-    <Compile Include="$(IntermediateOutputPath)\AlyoshaLexer.fs">
+    <Compile Include="obj\AlyoshaLexer.fs">
       <Visible>false</Visible>
       <Link>AlyoshaLexer.fs</Link>
     </Compile>

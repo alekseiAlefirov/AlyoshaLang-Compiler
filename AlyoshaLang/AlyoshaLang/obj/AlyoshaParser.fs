@@ -9,7 +9,7 @@ open Microsoft.FSharp.Text.Parsing.ParseHelpers
 open AlyoshaAST
 
 
-# 12 "obj\Debug\AlyoshaParser.fs"
+# 12 "obj\AlyoshaParser.fs"
 // This type is the type of tokens accepted by the parser
 type token = 
   | EOF
@@ -550,7 +550,7 @@ let _fsyacc_reductionSymbolCounts = [|1us; 2us; 4us; 3us; 2us; 1us; 7us; 2us; 0u
 let _fsyacc_productionToNonTerminalTable = [|0us; 1us; 2us; 2us; 3us; 3us; 4us; 5us; 5us; 6us; 6us; 7us; 7us; 8us; 8us; 9us; 10us; 10us; 11us; 11us; 11us; 11us; 11us; 11us; 11us; 12us; 13us; 14us; 14us; 15us; 15us; 15us; 16us; 16us; 16us; 17us; 17us; 18us; 18us; 18us; 19us; 20us; 21us; 22us; 22us; 23us; 24us; 24us; 25us; 25us; 25us; 25us; 25us; 25us; 26us; 26us; 27us; 28us; 28us; 29us; 29us; 30us; 31us; 31us; 32us; 32us; 33us; 33us; 34us; 34us; 35us; 35us; 36us; 36us; 36us; 36us; 36us; 36us; 36us; 37us; 37us; 38us; 38us; 39us; 40us; 40us; 41us; 41us; 42us; 42us; 43us; 43us; 44us; 44us; 45us; 45us; 46us; 46us; 47us; 47us; 47us; 47us; 48us; 49us; 50us; 50us; 51us; 51us; 51us; 51us; 52us; |]
 let _fsyacc_immediateActions = [|65535us; 49152us; 65535us; 16385us; 65535us; 65535us; 65535us; 16386us; 16387us; 65535us; 16388us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16390us; 65535us; 16391us; 65535us; 65535us; 16393us; 65535us; 65535us; 16395us; 65535us; 65535us; 16397us; 16399us; 65535us; 65535us; 16400us; 16402us; 16403us; 16404us; 16405us; 16406us; 16407us; 16408us; 65535us; 16409us; 65535us; 65535us; 65535us; 65535us; 65535us; 16410us; 65535us; 65535us; 65535us; 65535us; 65535us; 16411us; 65535us; 65535us; 16413us; 65535us; 16414us; 65535us; 16415us; 65535us; 65535us; 16416us; 65535us; 16417us; 65535us; 16418us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 65535us; 16419us; 65535us; 65535us; 65535us; 65535us; 65535us; 16421us; 65535us; 65535us; 65535us; 65535us; 16424us; 65535us; 16425us; 65535us; 65535us; 65535us; 65535us; 16426us; 65535us; 16427us; 65535us; 65535us; 65535us; 65535us; 16429us; 65535us; 16430us; 16432us; 65535us; 16433us; 16435us; 16436us; 65535us; 65535us; 16437us; 65535us; 65535us; 16438us; 65535us; 16440us; 65535us; 65535us; 65535us; 65535us; 16443us; 65535us; 65535us; 65535us; 16445us; 16446us; 16447us; 65535us; 16448us; 65535us; 16450us; 65535us; 65535us; 16452us; 16454us; 65535us; 16455us; 65535us; 65535us; 16456us; 65535us; 16457us; 65535us; 16458us; 65535us; 16459us; 65535us; 16460us; 65535us; 16461us; 16463us; 16464us; 65535us; 16465us; 65535us; 65535us; 16467us; 65535us; 65535us; 16468us; 65535us; 65535us; 16470us; 16472us; 16473us; 65535us; 16474us; 65535us; 65535us; 16476us; 16478us; 16479us; 65535us; 65535us; 16480us; 16482us; 16483us; 16484us; 65535us; 65535us; 16485us; 65535us; 16486us; 65535us; 16487us; 16488us; 16489us; 16490us; 16491us; 16492us; 16493us; 16494us; |]
 let _fsyacc_reductions ()  =    [| 
-# 553 "obj\Debug\AlyoshaParser.fs"
+# 553 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data :  AlyoshaAST.program )) in
             Microsoft.FSharp.Core.Operators.box
@@ -559,7 +559,7 @@ let _fsyacc_reductions ()  =    [|
                       raise (Microsoft.FSharp.Text.Parsing.Accept(Microsoft.FSharp.Core.Operators.box _1))
                    )
                  : '_startstart));
-# 562 "obj\Debug\AlyoshaParser.fs"
+# 562 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Prog)) in
             Microsoft.FSharp.Core.Operators.box
@@ -570,7 +570,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 37 "AlyoshaParser.fsy"
                  :  AlyoshaAST.program ));
-# 573 "obj\Debug\AlyoshaParser.fs"
+# 573 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionBlock)) in
@@ -583,7 +583,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 40 "AlyoshaParser.fsy"
                  : 'Prog));
-# 586 "obj\Debug\AlyoshaParser.fs"
+# 586 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -595,7 +595,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 41 "AlyoshaParser.fsy"
                  : 'Prog));
-# 598 "obj\Debug\AlyoshaParser.fs"
+# 598 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionDef)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionBlock)) in
@@ -607,7 +607,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 44 "AlyoshaParser.fsy"
                  : 'UnionBlock));
-# 610 "obj\Debug\AlyoshaParser.fs"
+# 610 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionDef)) in
             Microsoft.FSharp.Core.Operators.box
@@ -618,7 +618,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 45 "AlyoshaParser.fsy"
                  : 'UnionBlock));
-# 621 "obj\Debug\AlyoshaParser.fs"
+# 621 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypeVariables)) in
@@ -631,7 +631,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 48 "AlyoshaParser.fsy"
                  : 'UnionDef));
-# 634 "obj\Debug\AlyoshaParser.fs"
+# 634 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypeVariables)) in
@@ -643,7 +643,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 51 "AlyoshaParser.fsy"
                  : 'TypeVariables));
-# 646 "obj\Debug\AlyoshaParser.fs"
+# 646 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -653,7 +653,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 52 "AlyoshaParser.fsy"
                  : 'TypeVariables));
-# 656 "obj\Debug\AlyoshaParser.fs"
+# 656 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionElement)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionElementList)) in
@@ -665,7 +665,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 55 "AlyoshaParser.fsy"
                  : 'UnionElementList));
-# 668 "obj\Debug\AlyoshaParser.fs"
+# 668 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'UnionElement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -676,7 +676,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 56 "AlyoshaParser.fsy"
                  : 'UnionElementList));
-# 679 "obj\Debug\AlyoshaParser.fs"
+# 679 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypeCortage)) in
@@ -688,7 +688,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 59 "AlyoshaParser.fsy"
                  : 'UnionElement));
-# 691 "obj\Debug\AlyoshaParser.fs"
+# 691 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
@@ -699,7 +699,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 60 "AlyoshaParser.fsy"
                  : 'UnionElement));
-# 702 "obj\Debug\AlyoshaParser.fs"
+# 702 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'TypeCortage)) in
@@ -711,7 +711,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 63 "AlyoshaParser.fsy"
                  : 'TypeCortage));
-# 714 "obj\Debug\AlyoshaParser.fs"
+# 714 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
@@ -722,7 +722,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 64 "AlyoshaParser.fsy"
                  : 'TypeCortage));
-# 725 "obj\Debug\AlyoshaParser.fs"
+# 725 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ExpressionSequence)) in
             Microsoft.FSharp.Core.Operators.box
@@ -733,7 +733,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 67 "AlyoshaParser.fsy"
                  : 'Block));
-# 736 "obj\Debug\AlyoshaParser.fs"
+# 736 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'ExpressionSequence)) in
@@ -745,7 +745,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 70 "AlyoshaParser.fsy"
                  : 'ExpressionSequence));
-# 748 "obj\Debug\AlyoshaParser.fs"
+# 748 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
@@ -756,7 +756,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 71 "AlyoshaParser.fsy"
                  : 'ExpressionSequence));
-# 759 "obj\Debug\AlyoshaParser.fs"
+# 759 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LetAssignment)) in
             Microsoft.FSharp.Core.Operators.box
@@ -767,7 +767,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 74 "AlyoshaParser.fsy"
                  : 'Statement));
-# 770 "obj\Debug\AlyoshaParser.fs"
+# 770 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LetRecursiveAssignment)) in
             Microsoft.FSharp.Core.Operators.box
@@ -778,7 +778,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 75 "AlyoshaParser.fsy"
                  : 'Statement));
-# 781 "obj\Debug\AlyoshaParser.fs"
+# 781 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Reassignment)) in
             Microsoft.FSharp.Core.Operators.box
@@ -789,7 +789,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 76 "AlyoshaParser.fsy"
                  : 'Statement));
-# 792 "obj\Debug\AlyoshaParser.fs"
+# 792 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'IfStatement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -800,7 +800,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 77 "AlyoshaParser.fsy"
                  : 'Statement));
-# 803 "obj\Debug\AlyoshaParser.fs"
+# 803 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'WhileStatement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -811,7 +811,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 78 "AlyoshaParser.fsy"
                  : 'Statement));
-# 814 "obj\Debug\AlyoshaParser.fs"
+# 814 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'WriteStatement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -822,7 +822,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 79 "AlyoshaParser.fsy"
                  : 'Statement));
-# 825 "obj\Debug\AlyoshaParser.fs"
+# 825 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'MatchStatement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -833,7 +833,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 80 "AlyoshaParser.fsy"
                  : 'Statement));
-# 836 "obj\Debug\AlyoshaParser.fs"
+# 836 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Assignment)) in
             Microsoft.FSharp.Core.Operators.box
@@ -844,7 +844,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 84 "AlyoshaParser.fsy"
                  : 'LetAssignment));
-# 847 "obj\Debug\AlyoshaParser.fs"
+# 847 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'FunArguments)) in
@@ -858,7 +858,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 87 "AlyoshaParser.fsy"
                  : 'LetRecursiveAssignment));
-# 861 "obj\Debug\AlyoshaParser.fs"
+# 861 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'FunArguments)) in
@@ -872,7 +872,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 90 "AlyoshaParser.fsy"
                  : 'RecAndList));
-# 875 "obj\Debug\AlyoshaParser.fs"
+# 875 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -882,7 +882,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 91 "AlyoshaParser.fsy"
                  : 'RecAndList));
-# 885 "obj\Debug\AlyoshaParser.fs"
+# 885 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
@@ -894,7 +894,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 94 "AlyoshaParser.fsy"
                  : 'Assignment));
-# 897 "obj\Debug\AlyoshaParser.fs"
+# 897 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -905,7 +905,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 95 "AlyoshaParser.fsy"
                  : 'Assignment));
-# 908 "obj\Debug\AlyoshaParser.fs"
+# 908 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -916,7 +916,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 96 "AlyoshaParser.fsy"
                  : 'Assignment));
-# 919 "obj\Debug\AlyoshaParser.fs"
+# 919 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
@@ -928,7 +928,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 99 "AlyoshaParser.fsy"
                  : 'Reassignment));
-# 931 "obj\Debug\AlyoshaParser.fs"
+# 931 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -939,7 +939,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 100 "AlyoshaParser.fsy"
                  : 'Reassignment));
-# 942 "obj\Debug\AlyoshaParser.fs"
+# 942 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -950,7 +950,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 101 "AlyoshaParser.fsy"
                  : 'Reassignment));
-# 953 "obj\Debug\AlyoshaParser.fs"
+# 953 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -964,7 +964,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 105 "AlyoshaParser.fsy"
                  : 'IfStatement));
-# 967 "obj\Debug\AlyoshaParser.fs"
+# 967 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -977,7 +977,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 106 "AlyoshaParser.fsy"
                  : 'IfStatement));
-# 980 "obj\Debug\AlyoshaParser.fs"
+# 980 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -990,7 +990,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 109 "AlyoshaParser.fsy"
                  : 'ElifList));
-# 993 "obj\Debug\AlyoshaParser.fs"
+# 993 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -1002,7 +1002,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 110 "AlyoshaParser.fsy"
                  : 'ElifList));
-# 1005 "obj\Debug\AlyoshaParser.fs"
+# 1005 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1012,7 +1012,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 111 "AlyoshaParser.fsy"
                  : 'ElifList));
-# 1015 "obj\Debug\AlyoshaParser.fs"
+# 1015 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
@@ -1024,7 +1024,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 114 "AlyoshaParser.fsy"
                  : 'WhileStatement));
-# 1027 "obj\Debug\AlyoshaParser.fs"
+# 1027 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1035,7 +1035,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 117 "AlyoshaParser.fsy"
                  : 'WriteStatement));
-# 1038 "obj\Debug\AlyoshaParser.fs"
+# 1038 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'GuardList)) in
@@ -1047,7 +1047,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 120 "AlyoshaParser.fsy"
                  : 'MatchStatement));
-# 1050 "obj\Debug\AlyoshaParser.fs"
+# 1050 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Guard)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'GuardList)) in
@@ -1059,7 +1059,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 123 "AlyoshaParser.fsy"
                  : 'GuardList));
-# 1062 "obj\Debug\AlyoshaParser.fs"
+# 1062 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Guard)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1070,7 +1070,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 124 "AlyoshaParser.fsy"
                  : 'GuardList));
-# 1073 "obj\Debug\AlyoshaParser.fs"
+# 1073 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'GuardArgs)) in
@@ -1083,7 +1083,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 127 "AlyoshaParser.fsy"
                  : 'Guard));
-# 1086 "obj\Debug\AlyoshaParser.fs"
+# 1086 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'GuardArgs)) in
@@ -1095,7 +1095,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 130 "AlyoshaParser.fsy"
                  : 'GuardArgs));
-# 1098 "obj\Debug\AlyoshaParser.fs"
+# 1098 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1105,7 +1105,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 131 "AlyoshaParser.fsy"
                  : 'GuardArgs));
-# 1108 "obj\Debug\AlyoshaParser.fs"
+# 1108 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Statement)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1116,7 +1116,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 134 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1119 "obj\Debug\AlyoshaParser.fs"
+# 1119 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicTerm)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightLogicTermList)) in
@@ -1128,7 +1128,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 135 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1131 "obj\Debug\AlyoshaParser.fs"
+# 1131 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicTerm)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1139,7 +1139,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 136 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1142 "obj\Debug\AlyoshaParser.fs"
+# 1142 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Abstraction)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1150,7 +1150,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 137 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1153 "obj\Debug\AlyoshaParser.fs"
+# 1153 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Application)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1161,7 +1161,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 138 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1164 "obj\Debug\AlyoshaParser.fs"
+# 1164 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Block)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1172,7 +1172,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 139 "AlyoshaParser.fsy"
                  : 'Expression));
-# 1175 "obj\Debug\AlyoshaParser.fs"
+# 1175 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicTerm)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightLogicTermList)) in
@@ -1184,7 +1184,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 142 "AlyoshaParser.fsy"
                  : 'RightLogicTermList));
-# 1187 "obj\Debug\AlyoshaParser.fs"
+# 1187 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicTerm)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1195,7 +1195,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 143 "AlyoshaParser.fsy"
                  : 'RightLogicTermList));
-# 1198 "obj\Debug\AlyoshaParser.fs"
+# 1198 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LeftAppPart)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'ApplicantsList)) in
@@ -1207,7 +1207,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 146 "AlyoshaParser.fsy"
                  : 'Application));
-# 1210 "obj\Debug\AlyoshaParser.fs"
+# 1210 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1218,7 +1218,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 149 "AlyoshaParser.fsy"
                  : 'LeftAppPart));
-# 1221 "obj\Debug\AlyoshaParser.fs"
+# 1221 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1229,7 +1229,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 150 "AlyoshaParser.fsy"
                  : 'LeftAppPart));
-# 1232 "obj\Debug\AlyoshaParser.fs"
+# 1232 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'ApplicantsList)) in
@@ -1241,7 +1241,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 153 "AlyoshaParser.fsy"
                  : 'ApplicantsList));
-# 1244 "obj\Debug\AlyoshaParser.fs"
+# 1244 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1252,7 +1252,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 154 "AlyoshaParser.fsy"
                  : 'ApplicantsList));
-# 1255 "obj\Debug\AlyoshaParser.fs"
+# 1255 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'FunArguments)) in
             let _4 = (let data = parseState.GetInput(4) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
@@ -1264,7 +1264,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 157 "AlyoshaParser.fsy"
                  : 'Abstraction));
-# 1267 "obj\Debug\AlyoshaParser.fs"
+# 1267 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1274,7 +1274,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 160 "AlyoshaParser.fsy"
                  : 'FunArguments));
-# 1277 "obj\Debug\AlyoshaParser.fs"
+# 1277 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'IdList)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1285,7 +1285,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 161 "AlyoshaParser.fsy"
                  : 'FunArguments));
-# 1288 "obj\Debug\AlyoshaParser.fs"
+# 1288 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'IdList)) in
@@ -1297,7 +1297,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 164 "AlyoshaParser.fsy"
                  : 'IdList));
-# 1300 "obj\Debug\AlyoshaParser.fs"
+# 1300 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1308,7 +1308,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 165 "AlyoshaParser.fsy"
                  : 'IdList));
-# 1311 "obj\Debug\AlyoshaParser.fs"
+# 1311 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicFactor)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightLogicFactorList)) in
@@ -1320,7 +1320,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 168 "AlyoshaParser.fsy"
                  : 'LogicTerm));
-# 1323 "obj\Debug\AlyoshaParser.fs"
+# 1323 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1331,7 +1331,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 169 "AlyoshaParser.fsy"
                  : 'LogicTerm));
-# 1334 "obj\Debug\AlyoshaParser.fs"
+# 1334 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicFactor)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightLogicFactorList)) in
@@ -1343,7 +1343,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 172 "AlyoshaParser.fsy"
                  : 'RightLogicFactorList));
-# 1346 "obj\Debug\AlyoshaParser.fs"
+# 1346 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'LogicFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1354,7 +1354,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 173 "AlyoshaParser.fsy"
                  : 'RightLogicFactorList));
-# 1357 "obj\Debug\AlyoshaParser.fs"
+# 1357 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'CompOp)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1365,7 +1365,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 176 "AlyoshaParser.fsy"
                  : 'LogicFactor));
-# 1368 "obj\Debug\AlyoshaParser.fs"
+# 1368 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'CompOp)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1376,7 +1376,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 177 "AlyoshaParser.fsy"
                  : 'LogicFactor));
-# 1379 "obj\Debug\AlyoshaParser.fs"
+# 1379 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1388,7 +1388,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 180 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1391 "obj\Debug\AlyoshaParser.fs"
+# 1391 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1400,7 +1400,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 181 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1403 "obj\Debug\AlyoshaParser.fs"
+# 1403 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1412,7 +1412,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 182 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1415 "obj\Debug\AlyoshaParser.fs"
+# 1415 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1424,7 +1424,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 183 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1427 "obj\Debug\AlyoshaParser.fs"
+# 1427 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1436,7 +1436,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 184 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1439 "obj\Debug\AlyoshaParser.fs"
+# 1439 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
@@ -1448,7 +1448,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 185 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1451 "obj\Debug\AlyoshaParser.fs"
+# 1451 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SumOp)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1459,7 +1459,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 186 "AlyoshaParser.fsy"
                  : 'CompOp));
-# 1462 "obj\Debug\AlyoshaParser.fs"
+# 1462 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ArithmeticOp)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1470,7 +1470,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 189 "AlyoshaParser.fsy"
                  : 'SumOp));
-# 1473 "obj\Debug\AlyoshaParser.fs"
+# 1473 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'StringConcat)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1481,7 +1481,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 190 "AlyoshaParser.fsy"
                  : 'SumOp));
-# 1484 "obj\Debug\AlyoshaParser.fs"
+# 1484 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Term)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightTermList)) in
@@ -1493,7 +1493,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 193 "AlyoshaParser.fsy"
                  : 'ArithmeticOp));
-# 1496 "obj\Debug\AlyoshaParser.fs"
+# 1496 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Term)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1504,7 +1504,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 194 "AlyoshaParser.fsy"
                  : 'ArithmeticOp));
-# 1507 "obj\Debug\AlyoshaParser.fs"
+# 1507 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SimpleFactor)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'StringConcatList)) in
@@ -1516,7 +1516,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 197 "AlyoshaParser.fsy"
                  : 'StringConcat));
-# 1519 "obj\Debug\AlyoshaParser.fs"
+# 1519 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SimpleFactor)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'StringConcatList)) in
@@ -1528,7 +1528,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 200 "AlyoshaParser.fsy"
                  : 'StringConcatList));
-# 1531 "obj\Debug\AlyoshaParser.fs"
+# 1531 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SimpleFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1539,7 +1539,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 201 "AlyoshaParser.fsy"
                  : 'StringConcatList));
-# 1542 "obj\Debug\AlyoshaParser.fs"
+# 1542 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ArithmeticOpSign)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Term)) in
@@ -1552,7 +1552,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 204 "AlyoshaParser.fsy"
                  : 'RightTermList));
-# 1555 "obj\Debug\AlyoshaParser.fs"
+# 1555 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ArithmeticOpSign)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Term)) in
@@ -1564,7 +1564,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 205 "AlyoshaParser.fsy"
                  : 'RightTermList));
-# 1567 "obj\Debug\AlyoshaParser.fs"
+# 1567 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1574,7 +1574,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 208 "AlyoshaParser.fsy"
                  : 'ArithmeticOpSign));
-# 1577 "obj\Debug\AlyoshaParser.fs"
+# 1577 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1584,7 +1584,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 209 "AlyoshaParser.fsy"
                  : 'ArithmeticOpSign));
-# 1587 "obj\Debug\AlyoshaParser.fs"
+# 1587 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Factor)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'RightFactorList)) in
@@ -1596,7 +1596,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 212 "AlyoshaParser.fsy"
                  : 'Term));
-# 1599 "obj\Debug\AlyoshaParser.fs"
+# 1599 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Factor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1607,7 +1607,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 213 "AlyoshaParser.fsy"
                  : 'Term));
-# 1610 "obj\Debug\AlyoshaParser.fs"
+# 1610 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'FactorOpSign)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Factor)) in
@@ -1620,7 +1620,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 216 "AlyoshaParser.fsy"
                  : 'RightFactorList));
-# 1623 "obj\Debug\AlyoshaParser.fs"
+# 1623 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'FactorOpSign)) in
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Factor)) in
@@ -1632,7 +1632,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 217 "AlyoshaParser.fsy"
                  : 'RightFactorList));
-# 1635 "obj\Debug\AlyoshaParser.fs"
+# 1635 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1642,7 +1642,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 220 "AlyoshaParser.fsy"
                  : 'FactorOpSign));
-# 1645 "obj\Debug\AlyoshaParser.fs"
+# 1645 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1652,7 +1652,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 221 "AlyoshaParser.fsy"
                  : 'FactorOpSign));
-# 1655 "obj\Debug\AlyoshaParser.fs"
+# 1655 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ModFactor)) in
             let _3 = (let data = parseState.GetInput(3) in (Microsoft.FSharp.Core.Operators.unbox data : 'ModFactor)) in
@@ -1664,7 +1664,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 224 "AlyoshaParser.fsy"
                  : 'Factor));
-# 1667 "obj\Debug\AlyoshaParser.fs"
+# 1667 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'ModFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1675,7 +1675,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 225 "AlyoshaParser.fsy"
                  : 'Factor));
-# 1678 "obj\Debug\AlyoshaParser.fs"
+# 1678 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SimpleFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1686,7 +1686,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 228 "AlyoshaParser.fsy"
                  : 'ModFactor));
-# 1689 "obj\Debug\AlyoshaParser.fs"
+# 1689 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Reference)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1697,7 +1697,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 229 "AlyoshaParser.fsy"
                  : 'ModFactor));
-# 1700 "obj\Debug\AlyoshaParser.fs"
+# 1700 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Unreference)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1708,7 +1708,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 230 "AlyoshaParser.fsy"
                  : 'ModFactor));
-# 1711 "obj\Debug\AlyoshaParser.fs"
+# 1711 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'Expression)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1719,7 +1719,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 231 "AlyoshaParser.fsy"
                  : 'ModFactor));
-# 1722 "obj\Debug\AlyoshaParser.fs"
+# 1722 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'ModFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1730,7 +1730,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 234 "AlyoshaParser.fsy"
                  : 'Reference));
-# 1733 "obj\Debug\AlyoshaParser.fs"
+# 1733 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _2 = (let data = parseState.GetInput(2) in (Microsoft.FSharp.Core.Operators.unbox data : 'ModFactor)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1741,7 +1741,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 237 "AlyoshaParser.fsy"
                  : 'Unreference));
-# 1744 "obj\Debug\AlyoshaParser.fs"
+# 1744 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'Id)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1752,7 +1752,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 240 "AlyoshaParser.fsy"
                  : 'SimpleFactor));
-# 1755 "obj\Debug\AlyoshaParser.fs"
+# 1755 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : 'SimpleValue)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1763,7 +1763,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 241 "AlyoshaParser.fsy"
                  : 'SimpleFactor));
-# 1766 "obj\Debug\AlyoshaParser.fs"
+# 1766 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : System.Int32)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1774,7 +1774,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 244 "AlyoshaParser.fsy"
                  : 'SimpleValue));
-# 1777 "obj\Debug\AlyoshaParser.fs"
+# 1777 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : bool)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1785,7 +1785,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 245 "AlyoshaParser.fsy"
                  : 'SimpleValue));
-# 1788 "obj\Debug\AlyoshaParser.fs"
+# 1788 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1796,7 +1796,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 246 "AlyoshaParser.fsy"
                  : 'SimpleValue));
-# 1799 "obj\Debug\AlyoshaParser.fs"
+# 1799 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             Microsoft.FSharp.Core.Operators.box
                 (
@@ -1806,7 +1806,7 @@ let _fsyacc_reductions ()  =    [|
                    )
 # 247 "AlyoshaParser.fsy"
                  : 'SimpleValue));
-# 1809 "obj\Debug\AlyoshaParser.fs"
+# 1809 "obj\AlyoshaParser.fs"
         (fun (parseState : Microsoft.FSharp.Text.Parsing.IParseState) ->
             let _1 = (let data = parseState.GetInput(1) in (Microsoft.FSharp.Core.Operators.unbox data : string)) in
             Microsoft.FSharp.Core.Operators.box
@@ -1818,7 +1818,7 @@ let _fsyacc_reductions ()  =    [|
 # 249 "AlyoshaParser.fsy"
                  : 'Id));
 |]
-# 1821 "obj\Debug\AlyoshaParser.fs"
+# 1821 "obj\AlyoshaParser.fs"
 let tables () : Microsoft.FSharp.Text.Parsing.Tables<_> = 
   { reductions= _fsyacc_reductions ();
     endOfInputTag = _fsyacc_endOfInputTag;
