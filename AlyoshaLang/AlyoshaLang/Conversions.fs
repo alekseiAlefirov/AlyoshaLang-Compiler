@@ -404,6 +404,7 @@ let FoldConstants p =
             | BoolVal _ as x -> Some x
             | StringVal _ as x -> Some x
             | UnitVal as x -> Some x
+            | _ -> None
 
         match foldConstantsInBlock ast with
         | Some foldStaff -> Program (programName, unionBlock, foldStaff)

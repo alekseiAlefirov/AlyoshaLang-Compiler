@@ -1,5 +1,5 @@
 // include Fake lib
-#r @"packages\FAKE\tools\FakeLib.dll"
+#r @"packages\FAKE.3.34.7\tools\FakeLib.dll"
 open Fake
 open Fake.FscHelper
 
@@ -15,19 +15,28 @@ Target "Clean" (fun _ ->
 )
 
 Target "AlyoshaLang.exe" (fun _ ->
-  !! "AlyoshaLang/*.fs"
-    ++ "AlyoshaLang/obj/*.fs"
-    ++ "AlyoshaLang/*.fsy"
-    ++ "AlyoshaLang/*.fsl"
+  [srcDir + "AlyoshaAST.fs"; 
+    objDir + "AlyoshaParser.fs";
+    objDir + "AlyoshaLexer.fs"; 
+    //objDir + "AlyoshaParser.fsi";
+    srcDir + "Types.fs";  
+    //srcDir + "Conversions.fs";
+    srcDir + "FunScopes.fs";
+    srcDir + "VariablesInformation.fs";
+    srcDir + "Typer.fs";
+    srcDir + "Scoper.fs"; 
+    srcDir + "CodeGenerator.fs";
+    srcDir + "Program.fs";]
   |> Fsc (fun p ->
-           { p with References =
-                      [ "FSharp.Core.dll"
-                        "FSharp.PowerPack.dll" ] })
+           { p with Output = buildDir + "AlyoshaLang.exe"
+                    References =
+                      [ dllDir + "FSharp.Core.dll"
+                        dllDir + "FSharp.PowerPack.dll" ] })
 )
 
 // Build order
 "Clean"
-  ==> "BuildApp"
+  ==> "AlyoshaLang.exe"
 
 // start build
-RunTargetOrDefault "BuildApp"
+RunTargetOrDefault "AlyoshaLang.exe"
