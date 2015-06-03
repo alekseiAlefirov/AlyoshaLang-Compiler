@@ -3,7 +3,10 @@
 open Fake
 open Fake.FscHelper
 
+let srcDir = "./AlyoshaLang/"
+let objDir = srcDir + "obj/"
 let buildDir  = "./build/"
+let dllDir = "./packages/"
 
 
 // Targets
@@ -11,12 +14,15 @@ Target "Clean" (fun _ ->
     CleanDirs [buildDir]
 )
 
-Target "Main.exe" (fun _ ->
-  ["Main.fs"]
+Target "AlyoshaLang.exe" (fun _ ->
+  !! "AlyoshaLang/*.fs"
+    ++ "AlyoshaLang/obj/*.fs"
+    ++ "AlyoshaLang/*.fsy"
+    ++ "AlyoshaLang/*.fsl"
   |> Fsc (fun p ->
            { p with References =
-                      [ "Something.dll"
-                        "Otherthing.dll" ] })
+                      [ "FSharp.Core.dll"
+                        "FSharp.PowerPack.dll" ] })
 )
 
 // Build order
