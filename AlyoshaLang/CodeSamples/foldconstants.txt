@@ -8,4 +8,9 @@ if (false && true) then () fi
 	else  write "awsum" fi
 	;
 
+while (false) do
+	write "this should be fold"
+	od
+	;
+
 write x

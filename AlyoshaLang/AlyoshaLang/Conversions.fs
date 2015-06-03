@@ -128,7 +128,7 @@ let FoldConstants p =
                         processElif elifList
                     | _ -> Statement stmnt
                     |> Some
-
+                | Some (WhileStatement (BoolVal true, _)) -> Some UnitVal
                 | Some stmnt -> Some (Statement stmnt)
                 | None -> None
             

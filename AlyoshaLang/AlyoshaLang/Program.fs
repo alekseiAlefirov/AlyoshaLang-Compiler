@@ -45,5 +45,5 @@ let main argv =
     with
     | Typer.UnifyException -> System.Console.WriteLine("AlyoshaLang-Compiler: type inference error")
     | :? System.ArgumentException -> System.Console.WriteLine("Seems the program file can not be found. Maybe it's other")
-    | x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
+    | x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error. Maybe your file not found.")
     0 // return an integer exit code
