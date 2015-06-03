@@ -4,7 +4,9 @@ Semester task for Transltation Processes lead to this kinda program.
 To build this, you need 
 - MS VS2012 and FSharp 3.0
 - FSharp.PowerPack for FSharp 3.0 (https://fsharppowerpack.codeplex.com/releases)
-PowerPack is needed for lexing/parsing instruments.
+  PowerPack is needed for lexing/parsing instruments.
+OR
+- launch "AlyoshLang/build.bat"
 
 Launch: AlyoshaLang.exe "in.in".
 
