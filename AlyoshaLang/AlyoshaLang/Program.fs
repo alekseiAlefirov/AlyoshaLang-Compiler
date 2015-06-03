@@ -10,6 +10,7 @@ open AlyoshaLexer
 open Typer
 open Scoper
 open CodeGenerator
+open Conversions
 
 
 let parseFromFile (fileName : string) =
@@ -28,6 +29,7 @@ let main argv =
     try
         let ast = parseFromFile argv.[0]
         let table = checkProgram ast
+        let ast = FoldConstants ast
         let scopes, stringConstantsDict = GetScopes ast table
         let asmCode = GenerateCode ast table scopes stringConstantsDict
         
@@ -42,6 +44,6 @@ let main argv =
         buildFile.Close()
     with
     | Typer.UnifyException -> System.Console.WriteLine("AlyoshaLang-Compiler: type inference error")
-    //| System.ArgumentException  -> ""
-    //|  x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
+    | :? System.ArgumentException -> System.Console.WriteLine("Seems the program file can not be found. Maybe it's other")
+    | x -> System.Console.WriteLine("AlyoshaLang-Compiler: Lex/Syntax or maybe some other error")
     0 // return an integer exit code

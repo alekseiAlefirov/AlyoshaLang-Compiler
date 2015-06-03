@@ -21,8 +21,18 @@ let FoldConstants p =
         
         and foldConstantsInBlock blk = 
             let wasFold = ref false
+            let foldUnits exprList =
+                let rec f acc = function
+                | [] -> acc
+                | (UnitVal) :: t -> 
+                    wasFold := true
+                    f acc t
+                | x :: t -> f (x :: acc) t
+                exprList |> List.rev |> function
+                    | [] -> []
+                    | bot :: t -> f [bot] t
             let foldRes = 
-                blk |> unboxBlock |> processList wasFold
+                blk |> unboxBlock |> processList wasFold |> foldUnits
             if !wasFold then Some (Block foldRes)
             else None
 
@@ -295,9 +305,8 @@ let FoldConstants p =
                                 | ((Minus, _) as term) :: t -> bubblePlus (term :: leftAcc) t
                             let terms = 
                                 match x with
-                                | x when x < 0 -> (Minus, NumVal -x) :: terms
-                                | x when x > 0 -> (Plus, NumVal x) :: terms
-                                | _ -> terms
+                                | 0 ->  terms
+                                | _ -> (Plus, NumVal x) :: terms
                             
                             match terms with
                             | [] -> NumVal 0
@@ -311,7 +320,42 @@ let FoldConstants p =
                 | true -> Some res
                 | false -> None
             
-            //| Mult of (mulSign * expression) list
+            | Mult factors ->
+                let signs, factors = List.unzip factors
+                let wasFold = ref false
+                let foldFactors = factors |> processList wasFold
+                let folder acc factor =
+                    let accNum, notFolded = acc
+                    match factor with
+                    | (sign, NumVal n) ->
+                        wasFold := true
+                        match sign with
+                        | Mul -> (accNum * n), notFolded
+                        | Div -> (accNum / n), notFolded
+                    | _ -> accNum, (factor :: notFolded)
+                let res = List.zip signs foldFactors |> List.fold folder (1, []) |> (fun (x, y) ->
+                            
+                            let terms = List.rev y
+                            let rec bubbleMul leftAcc = function
+                                | [] -> None
+                                | ((Mul, _) as factor) :: t -> Some (factor :: ((List.rev leftAcc) @ t))
+                                | ((Div, _) as factor) :: t -> bubbleMul (factor :: leftAcc) t
+                            let terms = 
+                                match x with
+                                | 1 -> terms
+                                | _ -> (Mul, NumVal x) :: terms
+                            
+                            match terms with
+                            | [] -> NumVal 0
+                            | (Mul, n) :: [] -> n
+                            |  _ ->
+                                match bubbleMul [] terms with
+                                | Some x -> Mult x
+                                | None -> Mult ((Mul, NumVal 0) :: terms)
+                        )
+                match !wasFold with
+                | true -> Some res
+                | false -> None
 
             | Mod (expr1, expr2) ->  
                 let foldExpr1, foldExpr2 = foldConstantsInExpr expr1, foldConstantsInExpr expr2

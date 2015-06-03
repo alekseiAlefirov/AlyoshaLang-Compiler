@@ -1,0 +1,11 @@
+program foldConstants
+
+let x = ("hh" == "hw") != (4 > (3 + 4/2));
+();
+if (false && true) then () fi
+	elif ((35 % 6)*4 != 100/5) then write "is it fold?" fi
+	elif x then write "wow" fi
+	else  write "awsum" fi
+	;
+
+write x
