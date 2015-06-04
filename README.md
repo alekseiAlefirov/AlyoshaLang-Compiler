@@ -1,6 +1,10 @@
 # AlyoshaLang-Compiler
 Semester task for Transltation Processes lead to this kinda program.
 
+AlyoshaLang is functional programming language, translating by this compiler to ASM x86 (MASM32 currently).
+
+Implentation language is Microsoft F#.
+
 To build this, you need 
 - MS VS2012 and FSharp 3.0
 - FSharp.PowerPack for FSharp 3.0 (https://fsharppowerpack.codeplex.com/releases)
