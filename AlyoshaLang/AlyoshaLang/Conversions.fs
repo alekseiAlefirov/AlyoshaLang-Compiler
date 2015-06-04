@@ -351,7 +351,7 @@ let FoldConstants p =
                             |  _ ->
                                 match bubbleMul [] terms with
                                 | Some x -> Mult x
-                                | None -> Mult ((Mul, NumVal 0) :: terms)
+                                | None -> Mult ((Mul, NumVal 1) :: terms)
                         )
                 match !wasFold with
                 | true -> Some res
