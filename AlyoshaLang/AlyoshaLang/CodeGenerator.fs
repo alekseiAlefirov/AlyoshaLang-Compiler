@@ -475,8 +475,12 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln ";check it is ptr type"
             printIntendln "mov eax, [ebp + 12]"
             printIntendln "mov ebx, [ebp + 8]"
-            printIntendln "cmp al, %d" (typeId StringType)
-            printIntendln "jl _addNewObjFinish"
+            printIntendln "cmp al, %d" (typeId IntType)
+            printIntendln "je _addNewObjFinish"
+            printIntendln "cmp al, %d" (typeId BoolType)
+            printIntendln "je _addNewObjFinish"
+            printIntendln "cmp al, %d" (typeId UnitType)
+            printIntendln "je _addNewObjFinish"
             
             printIntendln "mov ebx, heapObjHandle"
             printIntendln "mov ebx, [ebx]"
