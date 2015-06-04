@@ -1261,10 +1261,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "pop eax" //ptr to this function
             printIntendln "sub _currentDepth, 1"
 
+            printIntendln "call _addNewObj"
             printIntendln "pop ebx"
             printIntendln "pop eax"
-
-            printIntendln "call _addNewObj"
 
         let rec printBlock (blk : expression list) =
             match blk with

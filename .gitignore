@@ -35,3 +35,6 @@ AlyoshaLang/build/mem.exe
 AlyoshaLang/build/mem.obj
 AlyoshaLang/build/memWrite.txt
 AlyoshaLang/CodeSamples/mem.txt
+AlyoshaLang/build/letPoly.exe
+AlyoshaLang/build/letPoly_build.bat
+AlyoshaLang/build/letPoly.obj
