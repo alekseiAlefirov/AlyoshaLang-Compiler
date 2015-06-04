@@ -769,10 +769,13 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "jne _endDeleteObjRecords"
             printIntendln "mov ecx, [eax + 8]"
             printIntendln "mov [ebp - 4], ecx"
+            printIntendln "push eax; reference to this obj record to free it"
             printIntendln "push [eax]"
             printIntendln "push [eax + 4]"
             printIntendln "call _deleteObj"
             printIntendln "add esp, 8"
+            printIntendln "pop eax"
+            printIntendln "invoke HeapFree, heapHandle, 0, eax"
             printIntendln "jmp _deleteObjRecordsLoop"
 
             printIntendln "_endDeleteObjRecords:"
