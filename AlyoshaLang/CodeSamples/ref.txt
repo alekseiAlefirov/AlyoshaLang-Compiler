@@ -1,4 +1,5 @@
 program references
 
 let x = ref 525;
+let y = ref 22;
 write !x

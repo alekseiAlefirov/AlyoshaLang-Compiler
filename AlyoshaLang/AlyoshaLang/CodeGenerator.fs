@@ -769,6 +769,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push [eax + 4]"
             printIntendln "call _deleteObj"
             printIntendln "add esp, 8"
+            printIntendln "jmp _deleteObjRecordsLoop"
 
             printIntendln "_endDeleteObjRecords:"
             printIntendln "mov ecx, [ebp - 4]"
@@ -1187,6 +1188,11 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "mov ebx, eax"
             printIntendln "mov eax, %d" (typeId RefType)
+            printIntendln "push eax"
+            printIntendln "push ebx"
+            printIntendln "call _addNewObj"
+            printIntendln "pop ebx"
+            printIntendln "pop eax"
 
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
@@ -1254,13 +1260,11 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "pop eax" //ptr to this function
             printIntendln "sub _currentDepth, 1"
-            printIntendln "call _addNewObj"
 
             printIntendln "pop ebx"
             printIntendln "pop eax"
-            printIntendln "mov esp, ebp ; restore esp"
-            printIntendln "pop ebp"
-            printIntendln ""
+
+            printIntendln "call _addNewObj"
 
         let rec printBlock (blk : expression list) =
             match blk with
@@ -1852,6 +1856,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 currentScope := i
                 printExpr scopes.[i].Body
                 printCleanCurrentScopeStack()
+                printIntendln "mov esp, ebp ; restore esp"
+                printIntendln "pop ebp"
+                printIntendln ""
                 println "ret"
                 println ""
         
@@ -1869,16 +1876,23 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             currentScope := 0
             println "%s %s" programName "PROC"
             printIntendln "push ebp		;save old ebp value"
+            printIntendln "sub esp, 4; mem for main scope ptr to delete this"
             printIntendln "mov ebp, esp	;save pointer to this frame value"
             printIntendln "invoke SetConsoleTitle, offset sConsoleTitle"
             printInitializeHeapObjHandle()
             printCreateScope !currentScope
             printIntendln "sub esp, 8 ;space for result"
             printIntendln "push eax"
+            printIntendln "mov [ebp], eax"
 
             printBlock(unboxBlock mainBlock)
             printCleanCurrentScopeStack()
             printCloseHeapObjHandle()
+            printIntendln "call _deleteFunction"
+            printIntendln "mov esp, ebp ; restore esp"
+            printIntendln "add esp, 4"
+            printIntendln "pop ebp"
+            printIntendln ""
             printIntendln("invoke ExitProcess, NULL")
             println "%s %s" programName "ENDP"
         let printEnd() =
