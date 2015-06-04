@@ -923,6 +923,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "sub edx, 1"
             printIntendln "add eax, 4"
+            printIntendln "jmp _deleteRecursiveFunsLoop"
             printIntendln "_deleteRecursiveBlockFinish:"
             printIntendln "invoke HeapFree, heapHandle, 0, [ebp + 8]"
             printIntendln "mov esp, ebp ; restore esp"
