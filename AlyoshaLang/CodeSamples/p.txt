@@ -1,0 +1,20 @@
+program p
+
+let r = ref 0;
+
+let rec fact n =
+{
+	r := !r + 1;
+	if n <= 0 then 1 fi
+	else n * (fact (n - 1)) fi
+};
+
+let f = fun x ->
+{
+	let a = x;
+	fact a
+};
+
+write f 5;
+write " ";
+write !r

@@ -540,6 +540,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "add ebx, 1 ; for recblock size field"
             printIntendln "imul ebx, 4"
             printIntendln "add eax, ebx"
+            printIntendln "mov eax, [eax]"
             printIntendln "mov [ebp - 8], eax"
             printIntendln "jmp _endObjCopy"
 
@@ -629,6 +630,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push [esi]"
             printIntendln "push [esi + 4]"
             printIntendln "call _copyObj"
+            printIntendln "add eax, %d" isAssignedByte
             printIntendln "add esp, 8"
             printIntendln "pop edi"
             printIntendln "pop esi"
@@ -656,6 +658,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push [esi]"
             printIntendln "push [esi + 4]"
             printIntendln "call _copyObj"
+            printIntendln "add eax, %d" isAssignedByte
             printIntendln "add esp, 8"
             printIntendln "pop edi"
             printIntendln "pop esi"
@@ -683,6 +686,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "mov esi, [ebp + 8]"
             printIntendln "mov eax, [esi]"
+            printIntendln "imul eax, 4"
+            printIntendln "add eax, 4; for header num of functions"
             printIntendln "invoke HeapAlloc, heapHandle, HEAP_NO_SERIALIZE + HEAP_ZERO_MEMORY, eax"
             printIntendln "mov [ebp - 4], eax"
             printIntendln "mov esi, [ebp + 8]"
@@ -705,6 +710,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "pop esi"
             printIntendln "pop edx"
             printIntendln "mov [edi], eax"
+            printIntendln "add eax, %d" scopeRecursiveBlockPtrOffset
+            printIntendln "mov ebx, [ebp - 4]"
+            printIntendln "mov [eax], ebx"
             printIntendln "sub edx, 1"
             printIntendln "jmp _copyFunctionsInRecblock"
 
@@ -1188,6 +1196,7 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "push [ebp + 8]"
             printIntendln "call _copyObj"
             printIntendln "add esp, 8"
+            printIntendln "add eax, %d" isAssignedByte
             printIntendln "mov [ebp - 4], eax"
             printIntendln "mov [ebp - 8], ebx"
 
@@ -1217,10 +1226,19 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             println "_unref:"
             printIntendln "push ebp		;save old ebp value"
             printIntendln "mov ebp, esp	;save pointer to this frame value"
+            printIntendln "sub esp, 8"
+
+            printIntendln "mov ebx, [ebp + 8]"
+            printIntendln "add ebx, 4"
+            printIntendln "mov eax, [ebx]"
+            printIntendln "mov [ebp - 4], eax"
+            printIntendln "add ebx, 4"
+            printIntendln "mov eax, [ebx]"
+            printIntendln "mov [ebp - 8], eax"
 
             printIntendln "mov eax, [ebp + 12]"
             printIntendln "rol eax, 8"
-            printIntendln "mov al, 0"
+            printIntendln "cmp al, 0"
             printIntendln "jne _endUnref"
             printIntendln "push [ebp + 12]"
             printIntendln "push [ebp + 8]"
@@ -1228,6 +1246,8 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
             printIntendln "add esp, 8"
 
             printIntendln "_endUnref:"
+            printIntendln "mov eax, [ebp - 4]"
+            printIntendln "mov ebx, [ebp - 8]"
             printIntendln "mov esp, ebp ; restore esp"
             printIntendln "pop ebp"
             printIntendln ""
@@ -1258,6 +1278,35 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
 
             printIntendln "mov ebx, %d" (theScope.ExternalParameters.Length)
             printIntendln "mov [eax + %d], ebx ;put number of its external parameters" (scopeNumOfExtParamsOffset n)
+            
+            if (n <> 0) then
+                printIntendln "push eax"
+                let parentScope = scopes.[theScope.ParentScope]
+                theScope.ExternalParameters |> Array.iter
+                    (fun x ->
+                        let inParentType, idInParent = parentScope.InScopeVarTable.[x]
+                        printIntendln "mov edx, [ebp - %d]" currentScopePtrEbpOffset
+                        match inParentType with
+                            | InnerVariable ->
+                                printIntendln "add edx, %d" ((innerVariableOffsetInScope parentScope.Id idInParent)*4)
+                                printIntendln "push [edx]"
+                                printIntendln "push [edx + 4]"
+                                printIntendln "call _copyObj"
+                            | ExternalParameter -> 
+                                printIntendln "add edx, %d" ((externalParameterOffsetInScope parentScope.Id idInParent)*4)
+                                printIntendln "push [edx]"
+                                printIntendln "push [edx + 4]"
+                                printIntendln "call _copyObj"
+                            | _ -> () //should not happen
+                    
+                        printIntendln "add esp, 8"
+                        printIntendln "mov ecx, [esp]"
+                        let x = theScope.InScopeVarTable.[x] |> fun (x, y) -> y
+                        printIntendln "add ecx, %d" ((externalParameterOffsetInScope n x)*4)
+                        printIntendln "mov [ecx], eax"
+                        printIntendln "mov [ecx + 4], ebx"
+                    )
+                printIntendln "pop eax"
 
         let printCleanCurrentScopeStack() =     
             
@@ -1384,13 +1433,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "call _deleteObj"
                     printIntendln "add esp, 8"
 
-                    printIntendln "call _assignObj"
-                    printIntendln "add esp, 8"
-                    
-                    printIntendln "push eax"
-                    printIntendln "push ebx"
                     printIntendln "call _makeARef"
                     printIntendln "add esp, 8"
+                    printIntendln "call _assignObj"
 
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
@@ -1411,13 +1456,9 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "call _deleteObj"
                     printIntendln "add esp, 8"
 
-                    printIntendln "call _assignObj"
-                    printIntendln "add esp, 8"
-                    
-                    printIntendln "push eax"
-                    printIntendln "push ebx"
                     printIntendln "call _makeARef"
                     printIntendln "add esp, 8"
+                    printIntendln "call _assignObj"
 
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
@@ -1438,13 +1479,10 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                     printIntendln "call _deleteObj"
                     printIntendln "add esp, 8"
 
-                    printIntendln "call _assignObj"
-                    printIntendln "add esp, 8"
                     
-                    printIntendln "push eax"
-                    printIntendln "push ebx"
                     printIntendln "call _makeARef"
                     printIntendln "add esp, 8"
+                    printIntendln "call _assignObj"
 
                     //eax and ebx are occupied
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
