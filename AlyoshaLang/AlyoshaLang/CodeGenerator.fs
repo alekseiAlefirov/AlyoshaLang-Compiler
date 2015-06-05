@@ -1420,75 +1420,52 @@ let GenerateCode (ast : AlyoshaAST.program) tableOfSymbols (scopes : Scope []) (
                 match ass with
                 | UsualAssignment ((_, tableId), expression) ->
                     printExpr expression
-
-                    printIntendln "push eax"
-                    printIntendln "push ebx"
-
-                    //delete old value
                     let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" pois
-                    printIntendln "push [ecx]"
-                    printIntendln "push [ecx + 4]"
-                    printIntendln "call _deleteObj"
-                    printIntendln "add esp, 8"
-
-                    printIntendln "call _makeARef"
-                    printIntendln "add esp, 8"
+                    printIntendln "mov ecx, [ecx + 4]"
+                    printIntendln "push ecx"
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
                     printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
 
-                    //eax and ebx are occupied
-                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" pois
-                    printIntendln "mov [ecx], eax"
-                    printIntendln "mov [ecx + 4], ebx"
+                    printIntendln "pop ecx"
+                    printIntendln "mov [ecx + 4], eax"
+                    printIntendln "mov [ecx + 8], ebx"
                     printRetUnit()
                 | ReadNum (_, tableId) ->
                     printIntendln "call %s" readNumProcName
+                    let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
+                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
+                    printIntendln "add ecx, %d" pois
+                    printIntendln "mov ecx, [ecx + 4]"
+                    printIntendln "push ecx"
                     printIntendln "push %d" (typeId IntType)
                     printIntendln "push eax"
                     printIntendln ""
-                    let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
-                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" pois
-                    printIntendln "push [ecx]"
-                    printIntendln "push [ecx + 4]"
-                    printIntendln "call _deleteObj"
-                    printIntendln "add esp, 8"
-
-                    printIntendln "call _makeARef"
-                    printIntendln "add esp, 8"
                     printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
 
-                    //eax and ebx are occupied
-                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" pois
-                    printIntendln "mov [ecx], eax"
-                    printIntendln "mov [ecx + 4], ebx"
+                    printIntendln "pop ecx"
+                    printIntendln "mov [ecx + 4], eax"
+                    printIntendln "mov [ecx + 8], ebx"
                     printRetUnit()
                 | ReadLine (_, tableId) ->
                     printIntendln "call %s" readLineProcName
-                    printIntendln "push eax"
-                    printIntendln "push ebx"
-                    printIntendln ""
                     let pois = ((parameterOffsetInScope !currentScope !tableId) * 4)
                     printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
                     printIntendln "add ecx, %d" pois
-                    printIntendln "push [ecx]"
-                    printIntendln "push [ecx + 4]"
-                    printIntendln "call _deleteObj"
-                    printIntendln "add esp, 8"
-
-                    
-                    printIntendln "call _makeARef"
-                    printIntendln "add esp, 8"
+                    printIntendln "mov ecx, [ecx + 4]"
+                    printIntendln "push ecx"
+                    printIntendln "push eax"
+                    printIntendln "push ebx"
                     printIntendln "call _assignObj"
+                    printIntendln "add esp, 8"
 
-                    //eax and ebx are occupied
-                    printIntendln "mov ecx, [ebp - %d]" currentScopePtrEbpOffset//offset to this scope ptr
-                    printIntendln "add ecx, %d" pois
-                    printIntendln "mov [ecx], eax"
-                    printIntendln "mov [ecx + 4], ebx"
+                    printIntendln "pop ecx"
+                    printIntendln "mov [ecx + 4], eax"
+                    printIntendln "mov [ecx + 8], ebx"
                     printRetUnit()
                     
             | IfStatement (condition, trueBlock, elifList, elseBlock) ->
